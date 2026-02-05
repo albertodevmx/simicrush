@@ -6,15 +6,23 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init() {
+        // Get game dimensions dynamically
+        this.gameWidth = this.sys.game.config.width || 800;
+        this.gameHeight = this.sys.game.config.height || 600;
+
         // Config tablero
         this.cols = 8;
         this.rows = 8;
-        this.cell = 52; // tamaño celda (px)
+
+        // Calculate cell size based on viewport (responsive)
+        const maxCellWidth = (this.gameWidth - 40) / this.cols;
+        const maxCellHeight = (this.gameHeight - 200) / this.rows;
+        this.cell = Math.floor(Math.min(maxCellWidth, maxCellHeight, 52));
         this.boardPx = this.cols * this.cell;
 
-        // Posición del tablero (centrado)
-        this.boardX = 400 - this.boardPx / 2;
-        this.boardY = 130; // deja espacio para HUD
+        // Posición del tablero (centrado dinámicamente)
+        this.boardX = (this.gameWidth - this.boardPx) / 2;
+        this.boardY = 100; // deja espacio para HUD
 
         // Tipos de piezas (0..N-1) -> KEYS de tus sprites (cargados en PreloadScene)
         this.types = [
@@ -33,38 +41,44 @@ export default class GameScene extends Phaser.Scene {
 
         // Score + tiempo
         this.score = 0;
-        this.timeLeft = 60; // 3 minutos
+        this.timeLeft = 60; // 60 segundos
         this.gameOver = false;
     }
 
     create() {
+        const centerX = this.gameWidth / 2;
+        const centerY = this.gameHeight / 2;
+
         // Fondo
-        this.add.rectangle(400, 300, 800, 600, 0x13001c);
-        this.add.rectangle(400, 300, 800, 600, 0x2a0033, 0.25);
+        this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x13001c);
+        this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x2a0033, 0.25);
 
         // HUD
+        const fontSize = this.gameWidth < 500 ? "16px" : "22px";
+
         this.scoreText = this.add
-            .text(24, 18, `Cuadros destruidos: 0`, {
+            .text(20, 15, `Cuadros destruidos: 0`, {
                 fontFamily: "Arial",
-                fontSize: "22px",
+                fontSize: fontSize,
                 color: "#ffd1e8",
             })
             .setDepth(10);
 
         this.timeText = this.add
-            .text(776, 18, `03:00`, {
+            .text(this.gameWidth - 20, 15, `01:00`, {
                 fontFamily: "Arial",
-                fontSize: "22px",
+                fontSize: fontSize,
                 color: "#ffffff",
             })
             .setOrigin(1, 0)
             .setDepth(10);
 
         // Botón menú
+        const backFontSize = this.gameWidth < 500 ? "14px" : "18px";
         const back = this.add
-            .text(24, 54, "← Menú", {
+            .text(20, 55, "← Menú", {
                 fontFamily: "Arial",
-                fontSize: "18px",
+                fontSize: backFontSize,
                 color: "#ffd1e8",
                 backgroundColor: "#2a0033",
                 padding: { left: 12, right: 12, top: 8, bottom: 8 },
@@ -80,7 +94,7 @@ export default class GameScene extends Phaser.Scene {
         // Marco tablero
         this.add
             .rectangle(
-                400,
+                this.boardX + this.boardPx / 2,
                 this.boardY + this.boardPx / 2,
                 this.boardPx + 18,
                 this.boardPx + 18,
@@ -562,17 +576,31 @@ export default class GameScene extends Phaser.Scene {
 
         if (this.timerEvent) this.timerEvent.remove(false);
 
-        this.add.rectangle(400, 300, 800, 600, 0x000000, 0.55).setDepth(100);
+        const centerX = this.gameWidth / 2;
+        const centerY = this.gameHeight / 2;
+
+        // Overlay
+        this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x000000, 0.55).setDepth(100);
+
+        // Panel dimensions (responsive)
+        const panelWidth = Math.min(this.gameWidth - 40, 520);
+        const panelHeight = Math.min(this.gameHeight - 100, 300);
 
         const panel = this.add
-            .rectangle(400, 300, 520, 300, 0x2a0033, 0.95)
+            .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
             .setStrokeStyle(4, 0xff5aa5, 0.9)
             .setDepth(101);
 
+        // Font sizes (responsive)
+        const titleFontSize = this.gameWidth < 500 ? "36px" : "52px";
+        const scoreFontSize = this.gameWidth < 500 ? "24px" : "34px";
+        const buttonFontSize = this.gameWidth < 500 ? "18px" : "26px";
+        const menuButtonFontSize = this.gameWidth < 500 ? "16px" : "22px";
+
         this.add
-            .text(400, 220, "⏰ ¡Tiempo!", {
+            .text(centerX, centerY - panelHeight / 4, "⏰ ¡Tiempo!", {
                 fontFamily: "Arial",
-                fontSize: "52px",
+                fontSize: titleFontSize,
                 color: "#ffffff",
                 stroke: "#ff2d85",
                 strokeThickness: 8,
@@ -581,9 +609,9 @@ export default class GameScene extends Phaser.Scene {
             .setDepth(102);
 
         this.add
-            .text(400, 290, `Cuadros destruidos:\n${this.score}`, {
+            .text(centerX, centerY, `Cuadros destruidos:\n${this.score}`, {
                 fontFamily: "Arial",
-                fontSize: "34px",
+                fontSize: scoreFontSize,
                 color: "#ffd1e8",
                 align: "center",
             })
@@ -593,9 +621,9 @@ export default class GameScene extends Phaser.Scene {
         this.saveLocalScore(this.score);
 
         const again = this.add
-            .text(400, 390, "Jugar otra vez", {
+            .text(centerX, centerY + panelHeight / 3, "Jugar otra vez", {
                 fontFamily: "Arial",
-                fontSize: "26px",
+                fontSize: buttonFontSize,
                 color: "#ffffff",
                 backgroundColor: "#ff2d85",
                 padding: { left: 18, right: 18, top: 12, bottom: 12 },
@@ -607,9 +635,9 @@ export default class GameScene extends Phaser.Scene {
         again.on("pointerdown", () => this.scene.restart());
 
         const menu = this.add
-            .text(400, 450, "Volver al menú", {
+            .text(centerX, centerY + panelHeight / 2.2, "Volver al menú", {
                 fontFamily: "Arial",
-                fontSize: "22px",
+                fontSize: menuButtonFontSize,
                 color: "#ffd1e8",
                 backgroundColor: "#1a0022",
                 padding: { left: 18, right: 18, top: 10, bottom: 10 },

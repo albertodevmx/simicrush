@@ -1,8 +1,12 @@
 import Phaser from "phaser";
+import { startGame, endGame } from "../services/firebase.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
         super("game");
+        this.gameId = null;
+        this.employeeNumber = null;
+        this.playerName = null;
     }
 
     init() {
@@ -50,9 +54,25 @@ export default class GameScene extends Phaser.Scene {
         this.gameOver = false;
     }
 
-    create() {
+    async create() {
         const centerX = this.gameWidth / 2;
         const centerY = this.gameHeight / 2;
+
+        // Get player data from params or sessionStorage
+        const playerData = this.sys.game.registry.get('playerData') ||
+                          JSON.parse(sessionStorage.getItem("playerData") || "{}");
+
+        if (playerData.employeeNumber && playerData.playerName) {
+            this.employeeNumber = playerData.employeeNumber;
+            this.playerName = playerData.playerName;
+
+            try {
+                // Register game start in Firebase
+                this.gameId = await startGame(this.employeeNumber, this.playerName);
+            } catch (error) {
+                console.error("Error starting game in Firebase:", error);
+            }
+        }
 
         // Fondo
         this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x13001c);
@@ -579,7 +599,7 @@ export default class GameScene extends Phaser.Scene {
 
     // ---------- End game ----------
 
-    endGame() {
+    async endGame() {
         this.gameOver = true;
         this.isBusy = true;
 
@@ -589,12 +609,21 @@ export default class GameScene extends Phaser.Scene {
         const centerY = this.gameHeight / 2;
         const isMobile = this.gameWidth < 500;
 
+        // Register game end in Firebase
+        if (this.gameId && this.employeeNumber) {
+            try {
+                await endGame(this.employeeNumber, this.gameId, this.score);
+            } catch (error) {
+                console.error("Error ending game in Firebase:", error);
+            }
+        }
+
         // Overlay
         this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x000000, 0.55).setDepth(100);
 
         // Panel dimensions (responsive)
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
-        const panelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 300);
+        const panelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
@@ -604,14 +633,15 @@ export default class GameScene extends Phaser.Scene {
         // Font sizes (responsive)
         const titleFontSize = isMobile ? "32px" : "52px";
         const scoreFontSize = isMobile ? "20px" : "34px";
-        const buttonFontSize = isMobile ? "14px" : "26px";
-        const menuButtonFontSize = isMobile ? "12px" : "22px";
+        const buttonFontSize = isMobile ? "12px" : "22px";
+        const smallButtonFontSize = isMobile ? "11px" : "16px";
 
         // Positions inside panel
-        const titleY = centerY - (panelHeight / 3);
+        const titleY = centerY - (panelHeight / 3.5);
         const scoreY = centerY - (panelHeight / 12);
-        const buttonY = centerY + (panelHeight / 5);
-        const menuButtonY = centerY + (panelHeight / 2.5);
+        const button1Y = centerY + (panelHeight / 6);
+        const button2Y = centerY + (panelHeight / 3);
+        const button3Y = centerY + (panelHeight / 2.2);
 
         this.add
             .text(centerX, titleY, "⏰ ¡Tiempo!", {
@@ -637,26 +667,40 @@ export default class GameScene extends Phaser.Scene {
         this.saveLocalScore(this.score);
 
         const again = this.add
-            .text(centerX, buttonY, "Jugar otra vez", {
+            .text(centerX, button1Y, "Jugar otra vez", {
                 fontFamily: "Arial",
                 fontSize: buttonFontSize,
                 color: "#ffffff",
                 backgroundColor: "#ff2d85",
-                padding: { left: 14, right: 14, top: 10, bottom: 10 },
+                padding: { left: 12, right: 12, top: 8, bottom: 8 },
             })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(102);
 
-        again.on("pointerdown", () => this.scene.restart());
+        again.on("pointerdown", () => this.scene.start("menu"));
+
+        const scores = this.add
+            .text(centerX, button2Y, "Ver Puntajes", {
+                fontFamily: "Arial",
+                fontSize: buttonFontSize,
+                color: "#ffffff",
+                backgroundColor: "#6b21a8",
+                padding: { left: 12, right: 12, top: 8, bottom: 8 },
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(102);
+
+        scores.on("pointerdown", () => this.scene.start("scores"));
 
         const menu = this.add
-            .text(centerX, menuButtonY, "Volver al menú", {
+            .text(centerX, button3Y, "Volver al menú", {
                 fontFamily: "Arial",
-                fontSize: menuButtonFontSize,
+                fontSize: smallButtonFontSize,
                 color: "#ffd1e8",
                 backgroundColor: "#1a0022",
-                padding: { left: 12, right: 12, top: 8, bottom: 8 },
+                padding: { left: 10, right: 10, top: 6, bottom: 6 },
             })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -672,7 +716,7 @@ export default class GameScene extends Phaser.Scene {
             ease: "Back.out",
         });
         this.tweens.add({
-            targets: [again, menu],
+            targets: [again, scores, menu],
             alpha: { from: 0, to: 1 },
             duration: 250,
             delay: 120,

@@ -105,7 +105,7 @@ export default class GameScene extends Phaser.Scene {
         // Botón menú
         const backFontSize = isMobile ? "12px" : "18px";
         const backY = isMobile ? 38 : 55;
-        const back = this.add
+        this.menuBtn = this.add
             .text(hudPadding, backY, "← Menú", {
                 fontFamily: "Arial",
                 fontSize: backFontSize,
@@ -116,8 +116,9 @@ export default class GameScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .setDepth(10);
 
-        back.on("pointerdown", () => {
+        this.menuBtn.on("pointerdown", (pointer) => {
             if (this.isBusy) return;
+            pointer.event.stopPropagation();
             this.scene.start("menu");
         });
 
@@ -278,9 +279,13 @@ export default class GameScene extends Phaser.Scene {
     onSwipeStart(pointer) {
         if (this.isBusy || this.gameOver) return;
 
-        // Check if pointer is on the board
+        // Check if pointer is on the board area (not on HUD buttons)
         const { r, c } = this.pointerToCell(pointer.x, pointer.y);
         if (!this.inBounds(r, c)) return;
+
+        // Verify pointer is actually on a tile (extra safety check)
+        const tile = this.grid[r] && this.grid[r][c];
+        if (!tile) return;
 
         // Store swipe start data
         this.swipeStart = {
@@ -293,7 +298,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onSwipeEnd(pointer) {
-        if (!this.swipeStart || this.isBusy || this.gameOver) return;
+        if (!this.swipeStart || this.isBusy || this.gameOver) {
+            this.swipeStart = null;
+            return;
+        }
 
         const dx = pointer.x - this.swipeStart.x;
         const dy = pointer.y - this.swipeStart.y;
@@ -303,6 +311,13 @@ export default class GameScene extends Phaser.Scene {
         const minSwipeDistance = 30;
 
         if (distance < minSwipeDistance) {
+            this.swipeStart = null;
+            return;
+        }
+
+        // Double-check that swipe started and ended on valid board tiles
+        const startTile = this.grid[this.swipeStart.r] && this.grid[this.swipeStart.r][this.swipeStart.c];
+        if (!startTile) {
             this.swipeStart = null;
             return;
         }
@@ -636,8 +651,12 @@ export default class GameScene extends Phaser.Scene {
             }
         }
 
-        // Overlay
-        this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x000000, 0.55).setDepth(100);
+        // Overlay - must be interactive to block clicks to game board
+        const overlay = this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x000000, 0.55).setDepth(100);
+        overlay.setInteractive();
+        // Prevent overlay from triggering any events
+        overlay.on("pointerdown", () => {});
+        overlay.on("pointerup", () => {});
 
         // Panel dimensions (responsive)
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
@@ -696,7 +715,10 @@ export default class GameScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .setDepth(102);
 
-        again.on("pointerdown", () => this.scene.start("menu"));
+        again.on("pointerdown", (pointer) => {
+            pointer.event.stopPropagation();
+            this.scene.start("menu");
+        });
 
         const scores = this.add
             .text(centerX, button2Y, "Ver Puntajes", {
@@ -710,7 +732,10 @@ export default class GameScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .setDepth(102);
 
-        scores.on("pointerdown", () => this.scene.start("scores"));
+        scores.on("pointerdown", (pointer) => {
+            pointer.event.stopPropagation();
+            this.scene.start("scores");
+        });
 
         const menu = this.add
             .text(centerX, button3Y, "Volver al menú", {
@@ -724,7 +749,10 @@ export default class GameScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .setDepth(102);
 
-        menu.on("pointerdown", () => this.scene.start("menu"));
+        menu.on("pointerdown", (pointer) => {
+            pointer.event.stopPropagation();
+            this.scene.start("menu");
+        });
 
         panel.scale = 0.9;
         this.tweens.add({

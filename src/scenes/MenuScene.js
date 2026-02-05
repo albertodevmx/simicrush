@@ -11,6 +11,9 @@ export default class MenuScene extends Phaser.Scene {
     const centerY = this.cameras.main.height / 2;
     const isMobile = this.cameras.main.width < 500;
 
+    // Track if modal is open
+    this.isModalOpen = false;
+
     // Fondo con imagen o color
     if (this.textures.exists("menu-bg")) {
       this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
@@ -82,16 +85,22 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
+    // Store button references for enable/disable
+    this.enterBtn = btn;
+    this.scoresBtn = scoresBtn;
+
     // Button effects
     this.setupButtonEffects(btn);
     this.setupButtonEffects(scoresBtn);
 
     // Button interactions
     btn.on("pointerdown", () => {
+      if (this.isModalOpen) return;
       this.showPlayerForm();
     });
 
     scoresBtn.on("pointerdown", () => {
+      if (this.isModalOpen) return;
       this.scene.start("scores");
     });
 
@@ -139,6 +148,9 @@ export default class MenuScene extends Phaser.Scene {
     const form = document.getElementById("playerForm");
     const employeeInput = document.getElementById("employeeNumber");
     const nameInput = document.getElementById("playerName");
+
+    // Mark modal as open
+    this.isModalOpen = true;
 
     // Reset form
     form.reset();
@@ -245,6 +257,7 @@ export default class MenuScene extends Phaser.Scene {
           // Hide modal and start game
           document.getElementById("playerFormModal").classList.remove("active");
           document.getElementById("submitBtn").disabled = false;
+          this.isModalOpen = false;
 
           // Store in registry and sessionStorage for persistence
           this.sys.game.registry.set('playerData', { employeeNumber, playerName, recordsCount });

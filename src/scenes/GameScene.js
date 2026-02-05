@@ -10,19 +10,22 @@ export default class GameScene extends Phaser.Scene {
         this.gameWidth = this.sys.game.config.width || 800;
         this.gameHeight = this.sys.game.config.height || 600;
 
-        // Config tablero
-        this.cols = 8;
-        this.rows = 8;
+        // Detect if mobile (portrait orientation)
+        const isMobile = this.gameWidth < 500;
+
+        // Config tablero (adaptativo)
+        this.cols = isMobile ? 6 : 8;
+        this.rows = isMobile ? 9 : 8;
 
         // Calculate cell size based on viewport (responsive)
-        const maxCellWidth = (this.gameWidth - 40) / this.cols;
-        const maxCellHeight = (this.gameHeight - 200) / this.rows;
+        const maxCellWidth = (this.gameWidth - 30) / this.cols;
+        const maxCellHeight = (this.gameHeight - (isMobile ? 180 : 200)) / this.rows;
         this.cell = Math.floor(Math.min(maxCellWidth, maxCellHeight, 52));
         this.boardPx = this.cols * this.cell;
 
         // Posición del tablero (centrado dinámicamente)
         this.boardX = (this.gameWidth - this.boardPx) / 2;
-        this.boardY = 100; // deja espacio para HUD
+        this.boardY = isMobile ? 70 : 100; // menos espacio en mobile
 
         // Tipos de piezas (0..N-1) -> KEYS de tus sprites (cargados en PreloadScene)
         this.types = [
@@ -54,10 +57,13 @@ export default class GameScene extends Phaser.Scene {
         this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x2a0033, 0.25);
 
         // HUD
-        const fontSize = this.gameWidth < 500 ? "16px" : "22px";
+        const isMobile = this.gameWidth < 500;
+        const fontSize = isMobile ? "14px" : "22px";
+        const hudPadding = isMobile ? 12 : 20;
+        const hudY = isMobile ? 10 : 15;
 
         this.scoreText = this.add
-            .text(20, 15, `Cuadros destruidos: 0`, {
+            .text(hudPadding, hudY, `Cuadros destruidos: 0`, {
                 fontFamily: "Arial",
                 fontSize: fontSize,
                 color: "#ffd1e8",
@@ -65,7 +71,7 @@ export default class GameScene extends Phaser.Scene {
             .setDepth(10);
 
         this.timeText = this.add
-            .text(this.gameWidth - 20, 15, `01:00`, {
+            .text(this.gameWidth - hudPadding, hudY, `01:00`, {
                 fontFamily: "Arial",
                 fontSize: fontSize,
                 color: "#ffffff",
@@ -74,14 +80,15 @@ export default class GameScene extends Phaser.Scene {
             .setDepth(10);
 
         // Botón menú
-        const backFontSize = this.gameWidth < 500 ? "14px" : "18px";
+        const backFontSize = isMobile ? "12px" : "18px";
+        const backY = isMobile ? 38 : 55;
         const back = this.add
-            .text(20, 55, "← Menú", {
+            .text(hudPadding, backY, "← Menú", {
                 fontFamily: "Arial",
                 fontSize: backFontSize,
                 color: "#ffd1e8",
                 backgroundColor: "#2a0033",
-                padding: { left: 12, right: 12, top: 8, bottom: 8 },
+                padding: { left: 10, right: 10, top: 6, bottom: 6 },
             })
             .setInteractive({ useHandCursor: true })
             .setDepth(10);
@@ -578,13 +585,14 @@ export default class GameScene extends Phaser.Scene {
 
         const centerX = this.gameWidth / 2;
         const centerY = this.gameHeight / 2;
+        const isMobile = this.gameWidth < 500;
 
         // Overlay
         this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x000000, 0.55).setDepth(100);
 
         // Panel dimensions (responsive)
-        const panelWidth = Math.min(this.gameWidth - 40, 520);
-        const panelHeight = Math.min(this.gameHeight - 100, 300);
+        const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
+        const panelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 300);
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
@@ -592,24 +600,30 @@ export default class GameScene extends Phaser.Scene {
             .setDepth(101);
 
         // Font sizes (responsive)
-        const titleFontSize = this.gameWidth < 500 ? "36px" : "52px";
-        const scoreFontSize = this.gameWidth < 500 ? "24px" : "34px";
-        const buttonFontSize = this.gameWidth < 500 ? "18px" : "26px";
-        const menuButtonFontSize = this.gameWidth < 500 ? "16px" : "22px";
+        const titleFontSize = isMobile ? "32px" : "52px";
+        const scoreFontSize = isMobile ? "20px" : "34px";
+        const buttonFontSize = isMobile ? "14px" : "26px";
+        const menuButtonFontSize = isMobile ? "12px" : "22px";
+
+        // Positions inside panel
+        const titleY = centerY - (panelHeight / 3);
+        const scoreY = centerY - (panelHeight / 12);
+        const buttonY = centerY + (panelHeight / 5);
+        const menuButtonY = centerY + (panelHeight / 2.5);
 
         this.add
-            .text(centerX, centerY - panelHeight / 4, "⏰ ¡Tiempo!", {
+            .text(centerX, titleY, "⏰ ¡Tiempo!", {
                 fontFamily: "Arial",
                 fontSize: titleFontSize,
                 color: "#ffffff",
                 stroke: "#ff2d85",
-                strokeThickness: 8,
+                strokeThickness: isMobile ? 4 : 8,
             })
             .setOrigin(0.5)
             .setDepth(102);
 
         this.add
-            .text(centerX, centerY, `Cuadros destruidos:\n${this.score}`, {
+            .text(centerX, scoreY, `Cuadros destruidos:\n${this.score}`, {
                 fontFamily: "Arial",
                 fontSize: scoreFontSize,
                 color: "#ffd1e8",
@@ -621,12 +635,12 @@ export default class GameScene extends Phaser.Scene {
         this.saveLocalScore(this.score);
 
         const again = this.add
-            .text(centerX, centerY + panelHeight / 3, "Jugar otra vez", {
+            .text(centerX, buttonY, "Jugar otra vez", {
                 fontFamily: "Arial",
                 fontSize: buttonFontSize,
                 color: "#ffffff",
                 backgroundColor: "#ff2d85",
-                padding: { left: 18, right: 18, top: 12, bottom: 12 },
+                padding: { left: 14, right: 14, top: 10, bottom: 10 },
             })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -635,12 +649,12 @@ export default class GameScene extends Phaser.Scene {
         again.on("pointerdown", () => this.scene.restart());
 
         const menu = this.add
-            .text(centerX, centerY + panelHeight / 2.2, "Volver al menú", {
+            .text(centerX, menuButtonY, "Volver al menú", {
                 fontFamily: "Arial",
                 fontSize: menuButtonFontSize,
                 color: "#ffd1e8",
                 backgroundColor: "#1a0022",
-                padding: { left: 18, right: 18, top: 10, bottom: 10 },
+                padding: { left: 12, right: 12, top: 8, bottom: 8 },
             })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })

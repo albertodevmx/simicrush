@@ -28,6 +28,12 @@ function getGameDimensions() {
   };
 }
 
+// Detect if current dimensions are mobile (< 500px width)
+function isMobileBreakpoint() {
+  const dimensions = getGameDimensions();
+  return dimensions.width < 500;
+}
+
 const dimensions = getGameDimensions();
 
 const config = {
@@ -46,8 +52,24 @@ const config = {
 
 const game = new Phaser.Game(config);
 
+// Track the current breakpoint to detect changes
+let currentBreakpoint = isMobileBreakpoint();
+
 // Handle window resize for responsive design
 window.addEventListener('resize', () => {
   const newDimensions = getGameDimensions();
+  const newBreakpoint = newDimensions.width < 500;
+
   game.scale.resize(newDimensions.width, newDimensions.height);
+
+  // If breakpoint changed (mobile ↔ desktop), restart the game scene
+  if (newBreakpoint !== currentBreakpoint) {
+    currentBreakpoint = newBreakpoint;
+
+    // Get current scene
+    const activeScene = game.scene.getActive();
+    if (activeScene && activeScene.scene.key === 'game') {
+      activeScene.scene.restart();
+    }
+  }
 });

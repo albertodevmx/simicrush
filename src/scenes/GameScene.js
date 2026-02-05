@@ -554,9 +554,11 @@ export default class GameScene extends Phaser.Scene {
                 return { r, c };
             });
 
-            // Detect big match (5+ blocks) - only on first match in cascade
+            // Detect big match (5+ blocks in a straight line) - only on first match in cascade
             const isBigMatch = isFirstMatch && unique.length >= 5;
-            if (isBigMatch) {
+            const isStraightLine = isBigMatch && this.isStraightLineMatch(unique);
+
+            if (isBigMatch && isStraightLine) {
                 this.handleBigMatch();
                 this.lastBigMatchPosition = unique[Math.floor(unique.length / 2)]; // Store center position for super combo
             }
@@ -930,7 +932,23 @@ export default class GameScene extends Phaser.Scene {
         return null;
     }
 
-    // ---------- Big Match Bonus (5+ blocks = 2x points + hearts) ----------
+    // ---------- Straight Line Detection ----------
+
+    isStraightLineMatch(positions) {
+        if (positions.length < 5) return false;
+
+        // Check if all tiles are in the same row (horizontal line)
+        const rows = new Set(positions.map(p => p.r));
+        if (rows.size === 1) return true;
+
+        // Check if all tiles are in the same column (vertical line)
+        const cols = new Set(positions.map(p => p.c));
+        if (cols.size === 1) return true;
+
+        return false;
+    }
+
+    // ---------- Big Match Bonus (5+ blocks in straight line = hearts) ----------
 
     handleBigMatch() {
         // Spawn floating hearts from bottom to top
@@ -978,13 +996,18 @@ export default class GameScene extends Phaser.Scene {
     destroyAllOfType(type) {
         return new Promise((resolve) => {
             const tilesToDestroy = [];
+            let superComboPos = null;
 
-            // Find all tiles of this type
+            // Find all tiles of this type AND the super combo
             for (let r = 0; r < this.rows; r++) {
                 for (let c = 0; c < this.cols; c++) {
                     const tile = this.grid[r][c];
                     if (tile && tile.type === type && !tile.isSuperCombo) {
                         tilesToDestroy.push({ r, c, tile });
+                    }
+                    // Also mark super combo for destruction
+                    if (tile && tile.isSuperCombo) {
+                        superComboPos = { r, c, tile };
                     }
                 }
             }
@@ -1003,8 +1026,8 @@ export default class GameScene extends Phaser.Scene {
                 const sprite = tile.sprite;
                 const glow = tile.glow || sprite.getData("glow");
 
-                // Particles
-                const burst = 15;
+                // Particles at each destroyed tile position
+                const burst = 20;
                 if (this.matchEmitter) {
                     this.matchEmitter.explode(burst, sprite.x, sprite.y);
                 }
@@ -1025,6 +1048,33 @@ export default class GameScene extends Phaser.Scene {
                     this.grid[r][c] = null;
                 });
             });
+
+            // Destroy super combo also
+            if (superComboPos) {
+                const { r, c, tile } = superComboPos;
+                const sprite = tile.sprite;
+
+                // Particles at super combo position
+                const burst = 25;
+                if (this.matchEmitter) {
+                    this.matchEmitter.explode(burst, sprite.x, sprite.y);
+                }
+
+                // Pop animation
+                this.tweens.add({
+                    targets: sprite,
+                    scale: 0,
+                    alpha: 0,
+                    duration: 140,
+                    ease: "Back.in",
+                });
+
+                // Remove from grid
+                this.time.delayedCall(160, () => {
+                    sprite.destroy();
+                    this.grid[r][c] = null;
+                });
+            }
 
             // Play sound
             if (this.sfx?.pop) this.sfx.pop.play();

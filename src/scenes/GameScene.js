@@ -8,6 +8,9 @@ export default class GameScene extends Phaser.Scene {
         this.employeeNumber = null;
         this.playerName = null;
         this.swipeStart = null;
+        this.lastSwipeTime = 0;
+        this.hintTimer = null;
+        this.hintGraphics = null;
     }
 
     init() {
@@ -380,12 +383,17 @@ export default class GameScene extends Phaser.Scene {
 
             await this.swapTilesAnimated(r1, c1, r2, c2);
             this.isBusy = false;
+            this.lastSwipeTime = this.time.now;
+            this.startHintTimer();
             return;
         }
 
         // ✅ hubo match, lo resolverá removeMatches() (ahí pondremos pop)
+        this.clearHint();
         await this.resolveMatchesLoop();
         this.isBusy = false;
+        this.lastSwipeTime = this.time.now;
+        this.startHintTimer();
     }
 
     swapTilesData(r1, c1, r2, c2) {
@@ -514,8 +522,16 @@ export default class GameScene extends Phaser.Scene {
                 return { r, c };
             });
 
-            // Score = número de cuadros destruidos
-            this.score += unique.length;
+            // Detect big match (5+ blocks)
+            const isBigMatch = unique.length >= 5;
+            if (isBigMatch) {
+                this.handleBigMatch();
+            }
+
+            // Score = número de cuadros destruidos (con bonus x2 para big matches)
+            const pointsMultiplier = isBigMatch ? 2 : 1;
+            const pointsGained = unique.length * pointsMultiplier;
+            this.score += pointsGained;
             this.scoreText.setText(`Cuadros destruidos: ${this.score}`);
 
             // Tamaño del “burst” según el tamaño del match (se ve más épico en matches grandes)
@@ -625,8 +641,23 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
 
-            if (dropTweens.length === 0) return resolve();
-            this.time.delayedCall(240, () => resolve());
+            if (dropTweens.length === 0) {
+                // Check for available moves after drop
+                setTimeout(async () => {
+                    if (!this.hasAvailableMoves()) {
+                        await this.reshuffleBoard();
+                    }
+                    resolve();
+                }, 100);
+            } else {
+                this.time.delayedCall(240, async () => {
+                    // Check for available moves after drop
+                    if (!this.hasAvailableMoves()) {
+                        await this.reshuffleBoard();
+                    }
+                    resolve();
+                });
+            }
         });
     }
 
@@ -767,6 +798,202 @@ export default class GameScene extends Phaser.Scene {
             duration: 250,
             delay: 120,
         });
+    }
+
+    // ---------- Hint System (3 seconds idle) ----------
+
+    startHintTimer() {
+        if (this.hintTimer) this.time.removeEvent(this.hintTimer);
+
+        this.hintTimer = this.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                if (!this.isBusy && !this.gameOver) {
+                    this.showHint();
+                }
+            },
+        });
+    }
+
+    showHint() {
+        const hint = this.findPossibleMatches();
+        if (!hint) return;
+
+        // Clear old hint
+        this.clearHint();
+
+        // Create graphics for hint box
+        this.hintGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+        this.hintGraphics.setDepth(5);
+
+        // Draw boxes around the 3 tiles
+        hint.matches.forEach((pos) => {
+            const x = this.cellCenterX(pos.c);
+            const y = this.cellCenterY(pos.r);
+            const size = this.cell / 2;
+
+            this.hintGraphics.lineStyle(3, 0xffd1e8, 0.8);
+            this.hintGraphics.strokeRect(x - size, y - size, this.cell, this.cell);
+        });
+
+        this.add.existing(this.hintGraphics);
+
+        // Animate the hint box (pulse effect)
+        this.tweens.add({
+            targets: this.hintGraphics,
+            alpha: { from: 0.8, to: 0.3 },
+            duration: 800,
+            yoyo: true,
+            repeat: 2,
+        });
+    }
+
+    clearHint() {
+        if (this.hintTimer) {
+            this.time.removeEvent(this.hintTimer);
+            this.hintTimer = null;
+        }
+        if (this.hintGraphics) {
+            this.hintGraphics.destroy();
+            this.hintGraphics = null;
+        }
+    }
+
+    findPossibleMatches() {
+        // Try to find a possible swap that would result in a match
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                // Try swap with right neighbor
+                if (c < this.cols - 1) {
+                    this.swapTilesData(r, c, r, c + 1);
+                    const matches = this.findAllMatches();
+                    this.swapTilesData(r, c, r, c + 1); // Swap back
+
+                    if (matches.length > 0) {
+                        return { matches };
+                    }
+                }
+
+                // Try swap with bottom neighbor
+                if (r < this.rows - 1) {
+                    this.swapTilesData(r, c, r + 1, c);
+                    const matches = this.findAllMatches();
+                    this.swapTilesData(r, c, r + 1, c); // Swap back
+
+                    if (matches.length > 0) {
+                        return { matches };
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // ---------- Big Match Bonus (5+ blocks = 2x points + hearts) ----------
+
+    handleBigMatch() {
+        // Spawn floating hearts from bottom to top
+        const heartCount = 10;
+        for (let i = 0; i < heartCount; i++) {
+            const heart = this.add
+                .text(
+                    Phaser.Math.Between(50, this.gameWidth - 50),
+                    this.gameHeight + 30,
+                    "❤",
+                    {
+                        fontFamily: "Arial",
+                        fontSize: Phaser.Math.Between(24, 48) + "px",
+                        color: Phaser.Math.RND.pick(["#ff5aa5", "#ffd1e8", "#ff2d85"]),
+                    }
+                )
+                .setDepth(30)
+                .setAlpha(0.9);
+
+            // Floating animation
+            this.tweens.add({
+                targets: heart,
+                y: -50,
+                alpha: 0,
+                duration: 2000,
+                delay: Phaser.Math.Between(0, 300),
+                ease: "Sine.inOut",
+                onComplete: () => {
+                    heart.destroy();
+                },
+            });
+        }
+
+        // Play bonus visual effect on score text
+        this.tweens.add({
+            targets: this.scoreText,
+            scale: 1.2,
+            duration: 300,
+            yoyo: true,
+        });
+    }
+
+    // ---------- Deadlock Detection and Reshuffle ----------
+
+    hasAvailableMoves() {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                // Try swap with right neighbor
+                if (c < this.cols - 1) {
+                    this.swapTilesData(r, c, r, c + 1);
+                    const matches = this.findAllMatches();
+                    this.swapTilesData(r, c, r, c + 1);
+
+                    if (matches.length > 0) return true;
+                }
+
+                // Try swap with bottom neighbor
+                if (r < this.rows - 1) {
+                    this.swapTilesData(r, c, r + 1, c);
+                    const matches = this.findAllMatches();
+                    this.swapTilesData(r, c, r + 1, c);
+
+                    if (matches.length > 0) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    async reshuffleBoard() {
+        // Animate tiles blinking
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                const tile = this.grid[r][c];
+                if (tile?.sprite) {
+                    this.tweens.add({
+                        targets: tile.sprite,
+                        alpha: 0.3,
+                        duration: 150,
+                        yoyo: true,
+                        repeat: 2,
+                    });
+                }
+            }
+        }
+
+        // Wait for animation
+        await new Promise(resolve => this.time.delayedCall(600, resolve));
+
+        // Reshuffle: pick new types avoiding immediate matches
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                const tile = this.grid[r][c];
+                if (tile) {
+                    const newType = this.randomTypeAvoidingMatch(r, c);
+                    tile.type = newType;
+                    tile.sprite.setTexture(this.types[newType]);
+                }
+            }
+        }
+
+        this.isBusy = false;
+        this.lastSwipeTime = this.time.now;
+        this.startHintTimer();
     }
 
     saveLocalScore(score) {

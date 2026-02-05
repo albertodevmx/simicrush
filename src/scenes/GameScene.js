@@ -7,6 +7,7 @@ export default class GameScene extends Phaser.Scene {
         this.gameId = null;
         this.employeeNumber = null;
         this.playerName = null;
+        this.swipeStart = null;
     }
 
     init() {
@@ -175,8 +176,9 @@ export default class GameScene extends Phaser.Scene {
             this.matchEmitter = null;
         }
 
-        // Input
-        this.input.on("pointerdown", (pointer) => this.onPointerDown(pointer));
+        // Input - Swipe gesture detection
+        this.input.on("pointerdown", (pointer) => this.onSwipeStart(pointer));
+        this.input.on("pointerup", (pointer) => this.onSwipeEnd(pointer));
 
         // Timer (cada 1 segundo)
         this.timerEvent = this.time.addEvent({
@@ -271,68 +273,84 @@ export default class GameScene extends Phaser.Scene {
         return Phaser.Math.Between(0, this.types.length - 1);
     }
 
-    // ---------- Input / Swap ----------
+    // ---------- Input / Swipe System ----------
 
-    onPointerDown(pointer) {
+    onSwipeStart(pointer) {
         if (this.isBusy || this.gameOver) return;
 
+        // Check if pointer is on the board
         const { r, c } = this.pointerToCell(pointer.x, pointer.y);
         if (!this.inBounds(r, c)) return;
 
-        const tile = this.grid[r][c];
-        if (!tile) return;
+        // Store swipe start data
+        this.swipeStart = {
+            x: pointer.x,
+            y: pointer.y,
+            r: r,
+            c: c,
+            time: this.time.now,
+        };
+    }
 
-        if (!this.selected) {
-            this.selectTile(r, c);
+    onSwipeEnd(pointer) {
+        if (!this.swipeStart || this.isBusy || this.gameOver) return;
+
+        const dx = pointer.x - this.swipeStart.x;
+        const dy = pointer.y - this.swipeStart.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Minimum swipe distance (in pixels)
+        const minSwipeDistance = 30;
+
+        if (distance < minSwipeDistance) {
+            this.swipeStart = null;
             return;
         }
 
-        const { r: sr, c: sc } = this.selected;
+        // Determine swipe direction
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
 
-        // Si toca la misma: deselecciona
-        if (sr === r && sc === c) {
-            this.clearSelection();
+        let targetR = this.swipeStart.r;
+        let targetC = this.swipeStart.c;
+
+        // If horizontal swipe is dominant
+        if (absDx > absDy) {
+            if (dx > 0) {
+                // Swipe right
+                targetC = this.swipeStart.c + 1;
+            } else {
+                // Swipe left
+                targetC = this.swipeStart.c - 1;
+            }
+        } else {
+            // Vertical swipe is dominant
+            if (dy > 0) {
+                // Swipe down
+                targetR = this.swipeStart.r + 1;
+            } else {
+                // Swipe up
+                targetR = this.swipeStart.r - 1;
+            }
+        }
+
+        // Check if target is in bounds
+        if (!this.inBounds(targetR, targetC)) {
+            this.swipeStart = null;
             return;
         }
 
-        // Si no es adyacente, cambia selección
-        if (!this.areAdjacent(sr, sc, r, c)) {
-            this.clearSelection();
-            this.selectTile(r, c);
+        // Check if target tile exists
+        const targetTile = this.grid[targetR][targetC];
+        if (!targetTile) {
+            this.swipeStart = null;
             return;
         }
 
-        // Intentar swap
+        // Perform swap
         this.isBusy = true;
-        this.clearSelection();
-        this.trySwap(sr, sc, r, c);
-    }
-
-    selectTile(r, c) {
-        this.selected = { r, c };
-
-        const sprite = this.grid[r][c].sprite;
-        const glow = sprite.getData("glow");
-        if (glow) glow.setAlpha(0.55);
-
-        this.tweens.add({
-            targets: sprite,
-            scale: sprite.getData("baseScale") * 1.12,
-            duration: 110,
-            yoyo: true,
-            ease: "Sine.out",
-        });
-    }
-
-    clearSelection() {
-        if (!this.selected) return;
-        const { r, c } = this.selected;
-        const tile = this.grid[r][c];
-        if (tile?.sprite) {
-            const glow = tile.sprite.getData("glow");
-            if (glow) glow.setAlpha(0.18);
-        }
-        this.selected = null;
+        this.trySwap(this.swipeStart.r, this.swipeStart.c, targetR, targetC);
+        this.swipeStart = null;
     }
 
     async trySwap(r1, c1, r2, c2) {

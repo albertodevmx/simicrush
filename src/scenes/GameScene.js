@@ -13,19 +13,21 @@ export default class GameScene extends Phaser.Scene {
         // Detect if mobile (portrait orientation)
         const isMobile = this.gameWidth < 500;
 
-        // Config tablero (adaptativo)
-        this.cols = isMobile ? 6 : 8;
-        this.rows = isMobile ? 9 : 8;
+        // Config tablero - MISMO GRID para mobile y desktop (7x9)
+        // Solo cambia el fondo, no el tablero, así nadie tiene ventaja
+        this.cols = 7;
+        this.rows = 9;
 
-        // Calculate cell size based on viewport (responsive)
-        const maxCellWidth = (this.gameWidth - 30) / this.cols;
-        const maxCellHeight = (this.gameHeight - (isMobile ? 180 : 200)) / this.rows;
-        this.cell = Math.floor(Math.min(maxCellWidth, maxCellHeight, 52));
+        // Calculate cell size to occupy max width with 50px total padding (25px each side)
+        const sidePadding = 25;
+        const maxCellWidth = (this.gameWidth - sidePadding * 2) / this.cols;
+        const maxCellHeight = (this.gameHeight - (isMobile ? 170 : 200)) / this.rows;
+        this.cell = Math.floor(Math.min(maxCellWidth, maxCellHeight, 60));
         this.boardPx = this.cols * this.cell;
 
         // Posición del tablero (centrado dinámicamente)
         this.boardX = (this.gameWidth - this.boardPx) / 2;
-        this.boardY = isMobile ? 70 : 100; // menos espacio en mobile
+        this.boardY = isMobile ? 65 : 100; // menos espacio en mobile
 
         // Tipos de piezas (0..N-1) -> KEYS de tus sprites (cargados en PreloadScene)
         this.types = [

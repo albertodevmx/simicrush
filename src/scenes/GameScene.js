@@ -11,6 +11,7 @@ export default class GameScene extends Phaser.Scene {
         this.lastSwipeTime = 0;
         this.hintTimer = null;
         this.hintGraphics = null;
+        this.isFirstMatchInCascade = false;
     }
 
     init() {
@@ -46,6 +47,9 @@ export default class GameScene extends Phaser.Scene {
             "tile_plush",
             "tile_rocket",
         ];
+
+        // Special tile type (not in normal types)
+        this.SUPER_COMBO_TYPE = "superCombo";
 
         // Estado
         this.grid = []; // [row][col] = { type, sprite }
@@ -374,7 +378,33 @@ export default class GameScene extends Phaser.Scene {
     async trySwap(r1, c1, r2, c2) {
         if (this.sfx?.swipe) this.sfx.swipe.play(); // ✅ swap intento
 
+        // Check if either tile is a super combo
+        const tile1 = this.grid[r1][c1];
+        const tile2 = this.grid[r2][c2];
+        const isSuperComboSwap = tile1?.isSuperCombo || tile2?.isSuperCombo;
+
         await this.swapTilesAnimated(r1, c1, r2, c2);
+
+        // Handle super combo activation
+        if (isSuperComboSwap) {
+            let targetType;
+            if (tile1?.isSuperCombo) {
+                // Super combo is at r1,c1, so after swap it's at r2,c2
+                targetType = tile2?.type; // Get type of tile that was at r2,c2 before swap
+            } else {
+                // Super combo is at r2,c2, so after swap it's at r1,c1
+                targetType = tile1?.type; // Get type of tile that was at r1,c1 before swap
+            }
+
+            if (targetType && targetType !== this.SUPER_COMBO_TYPE) {
+                // Destroy all tiles matching the type
+                await this.destroyAllOfType(targetType);
+                this.isBusy = false;
+                this.lastSwipeTime = this.time.now;
+                this.startHintTimer();
+                return;
+            }
+        }
 
         const matches = this.findAllMatches();
         if (matches.length === 0) {
@@ -503,17 +533,19 @@ export default class GameScene extends Phaser.Scene {
     // ---------- Resolve loop (cascadas) ----------
 
     async resolveMatchesLoop() {
+        let isFirstMatch = true;
         while (true) {
             const matches = this.findAllMatches();
             if (matches.length === 0) break;
 
-            await this.removeMatches(matches);
+            await this.removeMatches(matches, isFirstMatch);
             await this.dropAndRefill();
+            isFirstMatch = false;
         }
     }
 
 
-    removeMatches(matches) {
+    removeMatches(matches, isFirstMatch = false) {
         return new Promise((resolve) => {
             // Evitar duplicados
             const keySet = new Set(matches.map((m) => `${m.r},${m.c}`));
@@ -522,16 +554,15 @@ export default class GameScene extends Phaser.Scene {
                 return { r, c };
             });
 
-            // Detect big match (5+ blocks)
-            const isBigMatch = unique.length >= 5;
+            // Detect big match (5+ blocks) - only on first match in cascade
+            const isBigMatch = isFirstMatch && unique.length >= 5;
             if (isBigMatch) {
                 this.handleBigMatch();
+                this.lastBigMatchPosition = unique[Math.floor(unique.length / 2)]; // Store center position for super combo
             }
 
-            // Score = número de cuadros destruidos (con bonus x2 para big matches)
-            const pointsMultiplier = isBigMatch ? 2 : 1;
-            const pointsGained = unique.length * pointsMultiplier;
-            this.score += pointsGained;
+            // Score = número de cuadros destruidos
+            this.score += unique.length;
             this.scoreText.setText(`Cuadros destruidos: ${this.score}`);
 
             // Tamaño del “burst” según el tamaño del match (se ve más épico en matches grandes)
@@ -644,6 +675,11 @@ export default class GameScene extends Phaser.Scene {
             if (dropTweens.length === 0) {
                 // Check for available moves after drop
                 setTimeout(async () => {
+                    // Spawn super combo if there was a big match
+                    if (this.lastBigMatchPosition) {
+                        this.spawnSuperCombo(this.lastBigMatchPosition.r, this.lastBigMatchPosition.c);
+                        this.lastBigMatchPosition = null;
+                    }
                     if (!this.hasAvailableMoves()) {
                         await this.reshuffleBoard();
                     }
@@ -651,6 +687,11 @@ export default class GameScene extends Phaser.Scene {
                 }, 100);
             } else {
                 this.time.delayedCall(240, async () => {
+                    // Spawn super combo if there was a big match
+                    if (this.lastBigMatchPosition) {
+                        this.spawnSuperCombo(this.lastBigMatchPosition.r, this.lastBigMatchPosition.c);
+                        this.lastBigMatchPosition = null;
+                    }
                     // Check for available moves after drop
                     if (!this.hasAvailableMoves()) {
                         await this.reshuffleBoard();
@@ -930,6 +971,111 @@ export default class GameScene extends Phaser.Scene {
             duration: 300,
             yoyo: true,
         });
+    }
+
+    // ---------- Super Combo Tile ----------
+
+    destroyAllOfType(type) {
+        return new Promise((resolve) => {
+            const tilesToDestroy = [];
+
+            // Find all tiles of this type
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    const tile = this.grid[r][c];
+                    if (tile && tile.type === type && !tile.isSuperCombo) {
+                        tilesToDestroy.push({ r, c, tile });
+                    }
+                }
+            }
+
+            if (tilesToDestroy.length === 0) {
+                resolve();
+                return;
+            }
+
+            // Add points for destroyed tiles
+            this.score += tilesToDestroy.length;
+            this.scoreText.setText(`Cuadros destruidos: ${this.score}`);
+
+            // Animate and destroy
+            tilesToDestroy.forEach(({ r, c, tile }) => {
+                const sprite = tile.sprite;
+                const glow = tile.glow || sprite.getData("glow");
+
+                // Particles
+                const burst = 15;
+                if (this.matchEmitter) {
+                    this.matchEmitter.explode(burst, sprite.x, sprite.y);
+                }
+
+                // Pop animation
+                this.tweens.add({
+                    targets: [sprite, glow].filter(Boolean),
+                    scale: 0,
+                    alpha: 0,
+                    duration: 140,
+                    ease: "Back.in",
+                });
+
+                // Remove from grid
+                this.time.delayedCall(160, () => {
+                    if (glow) glow.destroy();
+                    sprite.destroy();
+                    this.grid[r][c] = null;
+                });
+            });
+
+            // Play sound
+            if (this.sfx?.pop) this.sfx.pop.play();
+
+            // After animations, drop and refill
+            this.time.delayedCall(200, async () => {
+                await this.dropAndRefill();
+                await this.resolveMatchesLoop();
+                resolve();
+            });
+        });
+    }
+
+    spawnSuperCombo(r, c) {
+        // Check if position is valid
+        if (!this.inBounds(r, c)) return;
+
+        // Remove existing tile
+        const existingTile = this.grid[r][c];
+        if (existingTile?.sprite) {
+            const glow = existingTile.sprite.getData("glow");
+            if (glow) glow.destroy();
+            existingTile.sprite.destroy();
+        }
+
+        // Create super combo tile
+        const x = this.cellCenterX(c);
+        const y = this.cellCenterY(r);
+
+        // Create a graphics-based super combo tile with colorful box
+        const sprite = this.make.graphics({ x, y, add: false });
+        sprite.fillStyle(0xff5aa5, 1);
+        sprite.fillRect(-this.cell / 2 + 5, -this.cell / 2 + 5, this.cell - 10, this.cell - 10);
+
+        // Add borders in different colors
+        sprite.lineStyle(3, 0xffd1e8);
+        sprite.strokeRect(-this.cell / 2 + 3, -this.cell / 2 + 3, this.cell - 6, this.cell - 6);
+
+        sprite.lineStyle(2, 0xff2d85);
+        sprite.strokeRect(-this.cell / 2 + 7, -this.cell / 2 + 7, this.cell - 14, this.cell - 14);
+
+        sprite.setDepth(2);
+        this.add.existing(sprite);
+
+        // Store super combo data
+        const tile = {
+            type: this.SUPER_COMBO_TYPE,
+            sprite,
+            isSuperCombo: true
+        };
+        this.grid[r][c] = tile;
     }
 
     // ---------- Deadlock Detection and Reshuffle ----------

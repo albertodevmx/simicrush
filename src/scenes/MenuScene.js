@@ -195,8 +195,8 @@ export default class MenuScene extends Phaser.Scene {
         employeeError.textContent = "El número de empleado es requerido";
         employeeError.classList.add("show");
         isValid = false;
-      } else if (!/^\d{5}$/.test(employeeNumber)) {
-        employeeError.textContent = "Debe ser un número de 5 dígitos";
+      } else if (!/^\d{6}$/.test(employeeNumber)) {
+        employeeError.textContent = "Debe ser un número de 6 dígitos";
         employeeError.classList.add("show");
         isValid = false;
       }

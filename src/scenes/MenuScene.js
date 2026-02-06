@@ -143,6 +143,7 @@ export default class MenuScene extends Phaser.Scene {
     const form = document.getElementById("playerForm");
     const employeeInput = document.getElementById("employeeNumber");
     const nameInput = document.getElementById("playerName");
+    const closeBtn = document.getElementById("closeFormBtn");
 
     // Mark modal as open
     this.isModalOpen = true;
@@ -156,12 +157,20 @@ export default class MenuScene extends Phaser.Scene {
     modal.classList.add("active");
     employeeInput.focus();
 
-    // Remove previous listener
+    // Remove previous listeners
     form.onsubmit = null;
+    closeBtn.onclick = null;
 
     form.onsubmit = async (e) => {
       e.preventDefault();
       await this.validateAndSubmitForm();
+    };
+
+    // Close button functionality
+    closeBtn.onclick = (e) => {
+      e.preventDefault();
+      modal.classList.remove("active");
+      this.isModalOpen = false;
     };
   }
 

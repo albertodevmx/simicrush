@@ -36,7 +36,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Posición del tablero (centrado dinámicamente)
         this.boardX = (this.gameWidth - this.boardPx) / 2;
-        this.boardY = isMobile ? 65 : 100; // menos espacio en mobile
+        this.boardY = isMobile ? 185 : 220; // bajado 120px más
 
         // Tipos de piezas (0..N-1) -> KEYS de tus sprites (cargados en PreloadScene)
         this.types = [
@@ -113,19 +113,18 @@ export default class GameScene extends Phaser.Scene {
             .setOrigin(1, 0)
             .setDepth(10);
 
-        // Botón menú
-        const backFontSize = isMobile ? "12px" : "18px";
-        const backY = isMobile ? 38 : 55;
+        // Botón menú con imagen
+        const backY = isMobile ? 45 : 65;
         this.menuBtn = this.add
-            .text(hudPadding, backY, "← Menú", {
-                fontFamily: "Arial",
-                fontSize: backFontSize,
-                color: "#ffd1e8",
-                backgroundColor: "#2a0033",
-                padding: { left: 10, right: 10, top: 6, bottom: 16 },
-            })
+            .image(hudPadding + 30, backY, "btn-back-menu")
+            .setOrigin(0, 0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(10);
+
+        // Scale button to fit
+        const btnTargetWidth = isMobile ? 50 : 70;
+        const btnScale = btnTargetWidth / this.menuBtn.width;
+        this.menuBtn.setScale(btnScale);
 
         this.menuBtn.on("pointerdown", (pointer) => {
             if (this.isBusy) return;

@@ -31,18 +31,16 @@ export default class ScoresScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Botón volver
-    const backBtnFontSize = isMobile ? "14px" : "18px";
-    const backPadding = isMobile ? { left: 10, right: 10, top: 6, bottom: 6 } : { left: 12, right: 12, top: 8, bottom: 8 };
+    // Botón volver con imagen
     const backBtn = this.add
-      .text(20, 50, "← Volver", {
-        fontFamily: "Arial",
-        fontSize: backBtnFontSize,
-        color: "#ffd1e8",
-        backgroundColor: "#2a0033",
-        padding: backPadding,
-      })
+      .image(40, 50, "btn-back-menu")
+      .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true });
+
+    // Scale button to fit
+    const btnTargetWidth = isMobile ? 50 : 70;
+    const btnScale = btnTargetWidth / backBtn.width;
+    backBtn.setScale(btnScale);
 
     backBtn.on("pointerdown", () => {
       this.scene.start("menu");

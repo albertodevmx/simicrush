@@ -57,6 +57,34 @@
         max-width: 400px;
         width: 90%;
         box-shadow: 0 8px 32px rgba(255, 45, 133, 0.3);
+        position: relative;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 32px;
+        height: 32px;
+        background: #ff2d85;
+        color: #ffffff;
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+
+      .close-btn:hover {
+        background: #ff5aa5;
+        transform: scale(1.1);
+      }
+
+      .close-btn:active {
+        transform: scale(0.95);
       }
 
       .form-container h2 {
@@ -157,7 +185,8 @@
     <!-- Player Form Modal -->
     <div id="playerFormModal">
       <div class="form-container">
-        <h2>Datos del Jugador</h2>
+        <button type="button" class="close-btn" id="closeFormBtn">&times;</button>
+        <h2>Ingresa tus datos para continuar</h2>
         <form id="playerForm">
           <div class="form-group">
             <label for="employeeNumber">Número de Empleado (5 dígitos)</label>
@@ -184,7 +213,7 @@
 
           <div class="form-message" id="formMessage"></div>
 
-          <button type="submit" class="form-button" id="submitBtn">ENTRAR AL JUEGO</button>
+          <button type="submit" class="form-button" id="submitBtn">Jugar</button>
         </form>
       </div>
     </div>

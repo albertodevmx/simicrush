@@ -6,6 +6,12 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    // Menu Assets
+    this.load.image("menu-bg", "/assets/menu/fondo-menu.png");
+    this.load.image("menu-title", "/assets/menu/titulo.png");
+    this.load.image("btn-enter", "/assets/menu/btn-entrar.png");
+    this.load.image("btn-scores", "/assets/menu/btn-puntajes.png");
+
     // Tiles (6)
     this.load.image("tile_heart_s", "/assets/tiles/heart_s.png");
     this.load.image("tile_syringe", "/assets/tiles/syringe.png");

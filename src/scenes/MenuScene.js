@@ -47,40 +47,72 @@ export default class MenuScene extends Phaser.Scene {
       ease: "Sine.inOut",
     });
 
+    // Título con imagen
+    const titleImg = this.add
+      .image(centerX, centerY * 0.4, "menu-title")
+      .setOrigin(0.5);
+
+    // Scale title image based on screen size
+    if (isMobile) {
+      titleImg.setScale(0.6);
+    } else {
+      titleImg.setScale(0.9);
+    }
+
+    // Animate title
+    this.tweens.add({
+      targets: titleImg,
+      y: titleImg.y - 10,
+      duration: 900,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.inOut",
+    });
+
     // Subtítulo
-    const subtitleFontSize = isMobile ? "14px" : "18px";
+    const subtitleFontSize = isMobile ? "12px" : "16px";
     this.add
-      .text(centerX, centerY * 0.75, "Haz matches de 3 o más y llena la barra del amor", {
+      .text(centerX, centerY * 0.65, "Haz matches de 3 o más y consigue un cupido especial con 5+", {
         fontFamily: "Arial",
         fontSize: subtitleFontSize,
         color: "#ffd1e8",
+        align: "center",
+        wordWrap: { width: isMobile ? 250 : 400 }
       })
       .setOrigin(0.5);
 
-    // Botón ENTRAR
-    const btnFontSize = isMobile ? "24px" : "34px";
-    const btnPadding = isMobile ? { left: 16, right: 16, top: 10, bottom: 10 } : { left: 22, right: 22, top: 14, bottom: 14 };
+    // Botón ENTRAR con imagen
     const btn = this.add
-      .text(centerX, centerY + 80, "💖 ENTRAR 💖", {
-        fontFamily: "Arial",
-        fontSize: btnFontSize,
-        color: "#ffffff",
-        backgroundColor: "#ff2d85",
-        padding: btnPadding,
-      })
+      .image(centerX, centerY + 80, "btn-enter")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Botón Puntajes
-    const scoresBtnFontSize = isMobile ? "16px" : "22px";
-    const scoresPadding = isMobile ? { left: 12, right: 12, top: 8, bottom: 8 } : { left: 18, right: 18, top: 10, bottom: 10 };
+    if (isMobile) {
+      btn.setScale(0.7);
+    } else {
+      btn.setScale(0.9);
+    }
+
+    // Botón Puntajes con imagen
     const scoresBtn = this.add
-      .text(centerX, centerY + 140, "🏆 Puntajes", {
+      .image(centerX, centerY + 140, "btn-scores")
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    if (isMobile) {
+      scoresBtn.setScale(0.7);
+    } else {
+      scoresBtn.setScale(0.9);
+    }
+
+    // Botón Instrucciones
+    const instructionsBtn = this.add
+      .text(centerX, this.cameras.main.height - 40, "? Instrucciones", {
         fontFamily: "Arial",
-        fontSize: scoresBtnFontSize,
-        color: "#ffffff",
-        backgroundColor: "#6b21a8",
-        padding: scoresPadding,
+        fontSize: isMobile ? "12px" : "16px",
+        color: "#ffd1e8",
+        backgroundColor: "#2a0033",
+        padding: { left: 10, right: 10, top: 6, bottom: 6 },
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
@@ -102,6 +134,11 @@ export default class MenuScene extends Phaser.Scene {
     scoresBtn.on("pointerdown", () => {
       if (this.isModalOpen) return;
       this.scene.start("scores");
+    });
+
+    instructionsBtn.on("pointerdown", () => {
+      if (this.isModalOpen) return;
+      this.scene.start("instructions");
     });
 
     // Floating hearts

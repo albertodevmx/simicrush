@@ -3,6 +3,7 @@ import PreloadScene from "./scenes/PreloadScene";
 import MenuScene from "./scenes/MenuScene";
 import GameScene from "./scenes/GameScene";
 import ScoresScene from "./scenes/ScoresScene";
+import InstructionsScene from "./scenes/InstructionsScene";
 
 // Detect viewport size and orientation
 function getGameDimensions() {
@@ -48,7 +49,7 @@ const config = {
     expandParent: true,
     fullscreenTarget: 'parent',
   },
-  scene: [PreloadScene, MenuScene, GameScene, ScoresScene],
+  scene: [PreloadScene, MenuScene, InstructionsScene, GameScene, ScoresScene],
 };
 
 const game = new Phaser.Game(config);

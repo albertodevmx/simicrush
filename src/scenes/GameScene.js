@@ -22,10 +22,10 @@ export default class GameScene extends Phaser.Scene {
         // Detect if mobile (portrait orientation)
         const isMobile = this.gameWidth < 500;
 
-        // Config tablero - MISMO GRID para mobile y desktop (7x9)
+        // Config tablero - MISMO GRID para mobile y desktop (6x10)
         // Solo cambia el fondo, no el tablero, así nadie tiene ventaja
-        this.cols = 7;
-        this.rows = 9;
+        this.cols = 6;
+        this.rows = 10;
 
         // Calculate cell size to occupy max width with 50px total padding (25px each side)
         const sidePadding = 25;
@@ -132,7 +132,7 @@ export default class GameScene extends Phaser.Scene {
             this.scene.start("menu");
         });
 
-        // Marco tablero (7x9 grid)
+        // Marco tablero (6x10 grid)
         const boardHeight = this.rows * this.cell;
         this.add
             .rectangle(

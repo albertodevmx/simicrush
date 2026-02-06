@@ -14,16 +14,12 @@ export default class MenuScene extends Phaser.Scene {
     // Track if modal is open
     this.isModalOpen = false;
 
-    // Fondo con imagen o color
+    // Fondo con imagen
     if (this.textures.exists("menu-bg")) {
       this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
         this.cameras.main.width,
         this.cameras.main.height
       );
-    } else {
-      // Fallback: rectángulos de color
-      this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x120018);
-      this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x2a0033, 0.35);
     }
 
     // Título con imagen

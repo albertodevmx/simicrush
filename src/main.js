@@ -53,7 +53,7 @@ const config = {
   height: dimensions.height,
   backgroundColor: "#000000",
   scale: {
-    mode: Phaser.Scale.RESIZE,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     expandParent: true,
     fullscreenTarget: 'parent',

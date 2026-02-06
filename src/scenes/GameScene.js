@@ -82,16 +82,12 @@ export default class GameScene extends Phaser.Scene {
             }
         }
 
-        // Fondo con imagen o color
+        // Fondo con imagen
         if (this.textures.exists("game-bg")) {
             this.add.image(centerX, centerY, "game-bg").setDisplaySize(
                 this.gameWidth,
                 this.gameHeight
             );
-        } else {
-            // Fallback: rectángulos de color
-            this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x13001c);
-            this.add.rectangle(centerX, centerY, this.gameWidth, this.gameHeight, 0x2a0033, 0.25);
         }
 
         // HUD
@@ -137,14 +133,16 @@ export default class GameScene extends Phaser.Scene {
             this.scene.start("menu");
         });
 
-        // Marco tablero
+        // Marco tablero (7x9 grid)
+        const boardHeight = this.rows * this.cell;
         this.add
             .rectangle(
                 this.boardX + this.boardPx / 2,
-                this.boardY + this.boardPx / 2,
+                this.boardY + boardHeight / 2,
                 this.boardPx + 18,
-                this.boardPx + 18,
-                0x2a0033
+                boardHeight + 18,
+                0x000000,
+                0.3
             )
             .setStrokeStyle(4, 0xff5aa5, 0.7);
 

@@ -26,27 +26,6 @@ export default class MenuScene extends Phaser.Scene {
       this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x2a0033, 0.35);
     }
 
-    // Título
-    const titleFontSize = isMobile ? "48px" : "64px";
-    const title = this.add
-      .text(centerX, centerY * 0.5, "Match Love 💘", {
-        fontFamily: "Arial",
-        fontSize: titleFontSize,
-        color: "#ff5aa5",
-        stroke: "#ffffff",
-        strokeThickness: isMobile ? 4 : 6,
-      })
-      .setOrigin(0.5);
-
-    this.tweens.add({
-      targets: title,
-      y: centerY * 0.5 - 10,
-      duration: 900,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.inOut",
-    });
-
     // Título con imagen
     const titleImg = this.add
       .image(centerX, centerY * 0.4, "menu-title")
@@ -67,21 +46,9 @@ export default class MenuScene extends Phaser.Scene {
       ease: "Sine.inOut",
     });
 
-    // Subtítulo
-    const subtitleFontSize = isMobile ? "12px" : "16px";
-    this.add
-      .text(centerX, centerY * 0.65, "Haz matches de 3 o más y consigue un cupido especial con 5+", {
-        fontFamily: "Arial",
-        fontSize: subtitleFontSize,
-        color: "#ffd1e8",
-        align: "center",
-        wordWrap: { width: isMobile ? 250 : 400 }
-      })
-      .setOrigin(0.5);
-
     // Botón ENTRAR con imagen
     const btn = this.add
-      .image(centerX, centerY + 80, "btn-enter")
+      .image(centerX, centerY + 40, "btn-enter")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -92,23 +59,23 @@ export default class MenuScene extends Phaser.Scene {
 
     // Botón Puntajes con imagen
     const scoresBtn = this.add
-      .image(centerX, centerY + 140, "btn-scores")
+      .image(centerX, centerY + 100, "btn-scores")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to 40% of screen width
-    const scoresBtnTargetWidth = this.cameras.main.width * 0.4;
+    // Scale button to 30% of screen width
+    const scoresBtnTargetWidth = this.cameras.main.width * 0.3;
     const scoresBtnScale = scoresBtnTargetWidth / scoresBtn.width;
     scoresBtn.setScale(scoresBtnScale);
 
     // Botón Instrucciones con imagen
     const instructionsBtn = this.add
-      .image(centerX, this.cameras.main.height - 40, "btn-instructions")
+      .image(centerX, this.cameras.main.height - 60, "btn-instructions")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to 40% of screen width
-    const instrBtnTargetWidth = this.cameras.main.width * 0.4;
+    // Scale button to 30% of screen width
+    const instrBtnTargetWidth = this.cameras.main.width * 0.3;
     const instrBtnScale = instrBtnTargetWidth / instructionsBtn.width;
     instructionsBtn.setScale(instrBtnScale);
 

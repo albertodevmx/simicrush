@@ -10,9 +10,13 @@ export default class InstructionsScene extends Phaser.Scene {
     const centerY = this.cameras.main.height / 2;
     const isMobile = this.cameras.main.width < 500;
 
-    // Fondo
-    this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x120018);
-    this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x2a0033, 0.35);
+    // Fondo con imagen
+    if (this.textures.exists("menu-bg")) {
+      this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
+        this.cameras.main.width,
+        this.cameras.main.height
+      );
+    }
 
     // Título
     const titleFontSize = isMobile ? "32px" : "48px";

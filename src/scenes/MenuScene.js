@@ -53,8 +53,9 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     // Scale title to 80% of screen width
-    titleImg.setDisplayWidth(this.cameras.main.width * 0.8);
-    titleImg.setDisplayHeight(undefined);
+    const titleTargetWidth = this.cameras.main.width * 0.8;
+    const titleScale = titleTargetWidth / titleImg.width;
+    titleImg.setScale(titleScale);
 
     // Animate title
     this.tweens.add({
@@ -85,8 +86,9 @@ export default class MenuScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     // Scale button to 40% of screen width
-    btn.setDisplayWidth(this.cameras.main.width * 0.4);
-    btn.setDisplayHeight(undefined);
+    const btnTargetWidth = this.cameras.main.width * 0.4;
+    const btnScale = btnTargetWidth / btn.width;
+    btn.setScale(btnScale);
 
     // Botón Puntajes con imagen
     const scoresBtn = this.add
@@ -95,8 +97,9 @@ export default class MenuScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     // Scale button to 40% of screen width
-    scoresBtn.setDisplayWidth(this.cameras.main.width * 0.4);
-    scoresBtn.setDisplayHeight(undefined);
+    const scoresBtnTargetWidth = this.cameras.main.width * 0.4;
+    const scoresBtnScale = scoresBtnTargetWidth / scoresBtn.width;
+    scoresBtn.setScale(scoresBtnScale);
 
     // Botón Instrucciones con imagen
     const instructionsBtn = this.add
@@ -105,8 +108,9 @@ export default class MenuScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     // Scale button to 40% of screen width
-    instructionsBtn.setDisplayWidth(this.cameras.main.width * 0.4);
-    instructionsBtn.setDisplayHeight(undefined);
+    const instrBtnTargetWidth = this.cameras.main.width * 0.4;
+    const instrBtnScale = instrBtnTargetWidth / instructionsBtn.width;
+    instructionsBtn.setScale(instrBtnScale);
 
     // Store button references for enable/disable
     this.enterBtn = btn;

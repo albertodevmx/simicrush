@@ -59,7 +59,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Botón Puntajes con imagen
     const scoresBtn = this.add
-      .image(centerX, centerY + 100, "btn-scores")
+      .image(centerX, centerY + 120, "btn-scores")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -70,7 +70,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Botón Instrucciones con imagen
     const instructionsBtn = this.add
-      .image(centerX, this.cameras.main.height - 60, "btn-instructions")
+      .image(centerX, centerY + 170, "btn-instructions")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 

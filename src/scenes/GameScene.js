@@ -126,7 +126,7 @@ export default class GameScene extends Phaser.Scene {
                 fontSize: backFontSize,
                 color: "#ffd1e8",
                 backgroundColor: "#2a0033",
-                padding: { left: 10, right: 10, top: 6, bottom: 6 },
+                padding: { left: 10, right: 10, top: 6, bottom: 16 },
             })
             .setInteractive({ useHandCursor: true })
             .setDepth(10);

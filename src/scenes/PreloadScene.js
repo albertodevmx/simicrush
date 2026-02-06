@@ -11,6 +11,10 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("menu-title", "/assets/menu/titulo.png");
     this.load.image("btn-enter", "/assets/menu/btn-entrar.png");
     this.load.image("btn-scores", "/assets/menu/btn-puntajes.png");
+    this.load.image("btn-instructions", "/assets/menu/btn-instrucciones.png");
+
+    // Game Assets
+    this.load.image("game-bg", "/assets/game/fondo-juego.png");
 
     // Tiles (6)
     this.load.image("tile_heart_s", "/assets/tiles/heart_s.png");

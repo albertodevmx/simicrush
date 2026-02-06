@@ -52,12 +52,9 @@ export default class MenuScene extends Phaser.Scene {
       .image(centerX, centerY * 0.4, "menu-title")
       .setOrigin(0.5);
 
-    // Scale title image based on screen size
-    if (isMobile) {
-      titleImg.setScale(0.6);
-    } else {
-      titleImg.setScale(0.9);
-    }
+    // Scale title to 80% of screen width
+    titleImg.setDisplayWidth(this.cameras.main.width * 0.8);
+    titleImg.setDisplayHeight(undefined);
 
     // Animate title
     this.tweens.add({
@@ -87,11 +84,9 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    if (isMobile) {
-      btn.setScale(0.7);
-    } else {
-      btn.setScale(0.9);
-    }
+    // Scale button to 40% of screen width
+    btn.setDisplayWidth(this.cameras.main.width * 0.4);
+    btn.setDisplayHeight(undefined);
 
     // Botón Puntajes con imagen
     const scoresBtn = this.add
@@ -99,23 +94,19 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    if (isMobile) {
-      scoresBtn.setScale(0.7);
-    } else {
-      scoresBtn.setScale(0.9);
-    }
+    // Scale button to 40% of screen width
+    scoresBtn.setDisplayWidth(this.cameras.main.width * 0.4);
+    scoresBtn.setDisplayHeight(undefined);
 
-    // Botón Instrucciones
+    // Botón Instrucciones con imagen
     const instructionsBtn = this.add
-      .text(centerX, this.cameras.main.height - 40, "? Instrucciones", {
-        fontFamily: "Arial",
-        fontSize: isMobile ? "12px" : "16px",
-        color: "#ffd1e8",
-        backgroundColor: "#2a0033",
-        padding: { left: 10, right: 10, top: 6, bottom: 6 },
-      })
+      .image(centerX, this.cameras.main.height - 40, "btn-instructions")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
+
+    // Scale button to 40% of screen width
+    instructionsBtn.setDisplayWidth(this.cameras.main.width * 0.4);
+    instructionsBtn.setDisplayHeight(undefined);
 
     // Store button references for enable/disable
     this.enterBtn = btn;

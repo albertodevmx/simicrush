@@ -6,6 +6,44 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    // Get dimensions
+    const centerX = this.cameras.main.width / 2;
+    const centerY = this.cameras.main.height / 2;
+    const isMobile = this.cameras.main.width < 500;
+
+    // Background
+    this.cameras.main.setBackgroundColor("#ffffff");
+
+    // Progress bar background
+    const barWidth = isMobile ? 250 : 350;
+    const barHeight = 20;
+    const barX = centerX - barWidth / 2;
+    const barY = centerY + 80;
+
+    // Draw background rectangle for progress bar
+    const barBg = this.add.rectangle(centerX, barY, barWidth, barHeight, 0xdddddd);
+    barBg.setDepth(0);
+
+    // Create fill rectangle (will be updated with progress)
+    const barFill = this.add.rectangle(barX + barWidth / 2, barY, 0, barHeight, 0xff5aa5);
+    barFill.setOrigin(0, 0.5);
+    barFill.setDepth(1);
+
+    // Progress text
+    const progressText = this.add.text(centerX, barY - 40, "Cargando...", {
+      fontFamily: "Arial",
+      fontSize: isMobile ? "18px" : "24px",
+      color: "#000000",
+      align: "center"
+    });
+    progressText.setOrigin(0.5);
+    progressText.setDepth(1);
+
+    // Update progress bar on file load
+    this.load.on("progress", (progress) => {
+      barFill.setDisplaySize(barWidth * progress, barHeight);
+    });
+
     // Menu Assets
     this.load.image("menu-bg", "/assets/menu/fondo-menu.png");
     this.load.image("menu-title", "/assets/menu/titulo.png");

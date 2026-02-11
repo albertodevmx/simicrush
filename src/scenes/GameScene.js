@@ -90,6 +90,17 @@ export default class GameScene extends Phaser.Scene {
             );
         }
 
+        // Fondo azul para área de juego (debajo del HUD)
+        const hudHeight = isMobile ? 110 : 140;
+        this.add
+            .rectangle(centerX, hudHeight + (this.gameHeight - hudHeight) / 2, this.gameWidth, this.gameHeight - hudHeight, 0x0066cc, 0.3)
+            .setDepth(1);
+
+        // Fondo negro para área de HUD (marcadores)
+        this.add
+            .rectangle(centerX, hudHeight / 2, this.gameWidth, hudHeight, 0x000000, 0.4)
+            .setDepth(2);
+
         // HUD
         const isMobile = this.gameWidth < 500;
         const fontSize = isMobile ? "19px" : "27px";
@@ -120,15 +131,15 @@ export default class GameScene extends Phaser.Scene {
             .setDepth(10);
 
         // Botón menú con imagen
-        const backY = isMobile ? 45 : 65;
+        const backY = isMobile ? 65 : 85;
         this.menuBtn = this.add
-            .image(hudPadding + 40, backY, "btn-back-menu")
+            .image(hudPadding + 20, backY, "btn-back-menu")
             .setOrigin(0, 0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(10);
 
-        // Scale button to fit (250% más = multiplicar por 3.5)
-        const btnTargetWidth = isMobile ? 175 : 245;
+        // Scale button to fit (65% del tamaño anterior)
+        const btnTargetWidth = isMobile ? 114 : 159;
         const btnScale = btnTargetWidth / this.menuBtn.width;
         this.menuBtn.setScale(btnScale);
 

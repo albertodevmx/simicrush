@@ -230,21 +230,17 @@ export default class MenuScene extends Phaser.Scene {
         // Check records count
         const recordsCount = await getPlayerRecordsCount(employeeNumber);
 
-        if (recordsCount >= 3) {
-          formMessage.textContent = "❌ Has completado tus 3 intentos";
+        if (recordsCount >= 1) {
+          formMessage.textContent = "❌ Ya has agotado tu intento";
           formMessage.style.color = "#ff2d85";
           document.getElementById("submitBtn").disabled = false;
           resolve();
           return;
         }
 
-        // Show message about remaining attempts
-        const remaining = 3 - recordsCount;
+        // Show message about attempt
         if (recordsCount === 0) {
-          formMessage.textContent = "🎮 Eres nuevo en el juego, tienes 3 oportunidades";
-          formMessage.style.color = "#ffd1e8";
-        } else {
-          formMessage.textContent = `⚡ Te restan ${remaining} oportunidad${remaining > 1 ? "es" : ""}`;
+          formMessage.textContent = "🎮 Este es tu único intento, ¡que gane el mejor!";
           formMessage.style.color = "#ffd1e8";
         }
         formMessage.classList.add("show");

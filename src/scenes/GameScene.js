@@ -1300,9 +1300,12 @@ export default class GameScene extends Phaser.Scene {
     }
 
     // Easter egg: Explode all blocks
-    triggerEasterEgg() {
+    async triggerEasterEgg() {
         const centerX = this.gameWidth / 2;
         const centerY = this.gameHeight / 2;
+
+        // Prevent interaction while easter egg is happening
+        this.isBusy = true;
 
         // Destroy all tiles and create particles
         for (let r = 0; r < this.rows; r++) {
@@ -1334,5 +1337,14 @@ export default class GameScene extends Phaser.Scene {
         if (this.sfx && this.sfx.pop) {
             this.sfx.pop.play();
         }
+
+        // Wait a moment before dropping new tiles
+        await this.time.delayedCall(500, () => {});
+
+        // Drop and refill the board with new tiles
+        await this.dropAndRefill();
+
+        // Allow interaction again
+        this.isBusy = false;
     }
 }

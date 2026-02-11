@@ -35,7 +35,7 @@ export default class InstructionsScene extends Phaser.Scene {
 
     // Instructions content
     const instructionsFontSize = isMobile ? "13px" : "17px";
-    const lineSpacing = isMobile ? 50 : 70;
+    const lineSpacing = isMobile ? 25 : 35;
     const startY = isMobile ? 100 : 110;
     const maxWidth = isMobile ? 280 : 600;
     const contentPadding = isMobile ? 20 : 30;

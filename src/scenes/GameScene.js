@@ -90,8 +90,23 @@ export default class GameScene extends Phaser.Scene {
             );
         }
 
-        // HUD
+        // Detectar mobile antes de usarlo
         const isMobile = this.gameWidth < 500;
+
+        // Define HUD height
+        const hudHeight = isMobile ? 110 : 140;
+
+        // Fondo negro para área HUD (marcadores)
+        this.add
+            .rectangle(centerX, hudHeight / 2, this.gameWidth, hudHeight, 0x000000, 0.6)
+            .setDepth(0);
+
+        // Fondo azul claro para área de juego
+        this.add
+            .rectangle(centerX, hudHeight + (this.gameHeight - hudHeight) / 2, this.gameWidth, this.gameHeight - hudHeight, 0x3399ff, 0.3)
+            .setDepth(0);
+
+        // HUD
         const fontSize = isMobile ? "19px" : "27px";
         const hudPadding = isMobile ? 12 : 20;
         const hudY = isMobile ? 10 : 15;

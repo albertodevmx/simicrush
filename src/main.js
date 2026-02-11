@@ -1,4 +1,6 @@
 import Phaser from "phaser";
+import SplashScene1 from "./scenes/SplashScene1";
+import SplashScene2 from "./scenes/SplashScene2";
 import PreloadScene from "./scenes/PreloadScene";
 import MenuScene from "./scenes/MenuScene";
 import GameScene from "./scenes/GameScene";
@@ -58,7 +60,7 @@ const config = {
     expandParent: true,
     fullscreenTarget: 'parent',
   },
-  scene: [PreloadScene, MenuScene, InstructionsScene, GameScene, ScoresScene],
+  scene: [SplashScene1, SplashScene2, PreloadScene, MenuScene, InstructionsScene, GameScene, ScoresScene],
 };
 
 const game = new Phaser.Game(config);

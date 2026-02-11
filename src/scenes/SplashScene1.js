@@ -22,20 +22,21 @@ export default class SplashScene1 extends Phaser.Scene {
       .setOrigin(0.5)
       .setAlpha(0);
 
-    // FadeIn animation
+    // FadeIn animation (150% slower: 500ms * 2.5 = 1250ms)
     this.tweens.add({
       targets: logo,
       alpha: 1,
-      duration: 500,
+      duration: 1250,
       ease: "Linear"
     });
 
-    // Wait 1.5 seconds then fadeOut and go to next splash scene
-    this.time.delayedCall(1500, () => {
+    // Wait and fadeOut (150% slower: 300ms * 2.5 = 750ms)
+    // Total time: 2 seconds
+    this.time.delayedCall(2000 - 750, () => {
       this.tweens.add({
         targets: logo,
         alpha: 0,
-        duration: 300,
+        duration: 750,
         ease: "Linear",
         onComplete: () => {
           this.scene.start("splash2");

@@ -17,25 +17,31 @@ export default class SplashScene2 extends Phaser.Scene {
     // Set background to white
     this.cameras.main.setBackgroundColor("#ffffff");
 
-    // Add logo image in center with fadeIn
+    // Add logo image in center, scaled to 40% of screen width
     const logo = this.add.image(centerX, centerY, "simiwebs-logo")
       .setOrigin(0.5)
       .setAlpha(0);
 
-    // FadeIn animation
+    // Scale logo to 40% of screen width while maintaining aspect ratio
+    const targetWidth = this.cameras.main.width * 0.4;
+    const scale = targetWidth / logo.width;
+    logo.setScale(scale);
+
+    // FadeIn animation (150% slower: 500ms * 2.5 = 1250ms)
     this.tweens.add({
       targets: logo,
       alpha: 1,
-      duration: 500,
+      duration: 1250,
       ease: "Linear"
     });
 
-    // Wait 1.5 seconds then fadeOut and go to preload scene
-    this.time.delayedCall(1500, () => {
+    // Wait and fadeOut (150% slower: 300ms * 2.5 = 750ms)
+    // Total time: 2 seconds
+    this.time.delayedCall(2000 - 750, () => {
       this.tweens.add({
         targets: logo,
         alpha: 0,
-        duration: 300,
+        duration: 750,
         ease: "Linear",
         onComplete: () => {
           this.scene.start("preload");

@@ -90,17 +90,6 @@ export default class GameScene extends Phaser.Scene {
             );
         }
 
-        // Fondo azul para área de juego (debajo del HUD)
-        const hudHeight = isMobile ? 110 : 140;
-        this.add
-            .rectangle(centerX, hudHeight + (this.gameHeight - hudHeight) / 2, this.gameWidth, this.gameHeight - hudHeight, 0x0066cc, 0.3)
-            .setDepth(1);
-
-        // Fondo negro para área de HUD (marcadores)
-        this.add
-            .rectangle(centerX, hudHeight / 2, this.gameWidth, hudHeight, 0x000000, 0.4)
-            .setDepth(2);
-
         // HUD
         const isMobile = this.gameWidth < 500;
         const fontSize = isMobile ? "19px" : "27px";

@@ -34,10 +34,11 @@ export default class InstructionsScene extends Phaser.Scene {
     });
 
     // Instructions content
-    const instructionsFontSize = isMobile ? "22px" : "28px";
+    const instructionsFontSize = isMobile ? "13px" : "17px";
     const lineSpacing = isMobile ? 50 : 70;
-    const startY = isMobile ? 50 : 60;
+    const startY = isMobile ? 100 : 110;
     const maxWidth = isMobile ? 280 : 600;
+    const contentPadding = isMobile ? 20 : 30;
 
     const instructions = [
       "🎮 OBJETIVO DEL JUEGO",
@@ -72,6 +73,16 @@ export default class InstructionsScene extends Phaser.Scene {
       "• ¡Maximiza tu puntuación!",
     ];
 
+    // Calculate the height of all instructions
+    const contentHeight = (instructions.length - 1) * lineSpacing + contentPadding * 2;
+    const contentCenterY = startY + contentHeight / 2 - contentPadding;
+
+    // Draw white background box for all instructions
+    const boxWidth = maxWidth + contentPadding * 2;
+    this.add
+      .rectangle(centerX, contentCenterY, boxWidth, contentHeight, 0xffffff, 0.95)
+      .setStrokeStyle(2, 0xff5aa5, 0.5);
+
     let yPos = startY;
     instructions.forEach((line) => {
       const color = line.startsWith("🎮") || line.startsWith("💫") ||
@@ -83,7 +94,7 @@ export default class InstructionsScene extends Phaser.Scene {
       const fontSize = line.startsWith("🎮") || line.startsWith("💫") ||
                       line.startsWith("🏆") || line.startsWith("⚡") ||
                       line.startsWith("❌") || line.startsWith("💡")
-        ? (isMobile ? "24px" : "32px")
+        ? (isMobile ? "14px" : "19px")
         : instructionsFontSize;
 
       this.add
@@ -92,8 +103,6 @@ export default class InstructionsScene extends Phaser.Scene {
           fontSize: fontSize,
           fontStyle: "bold",
           color: color,
-          backgroundColor: "#ffffff",
-          padding: { left: 10, right: 10, top: 5, bottom: 5 },
           align: "center",
           wordWrap: { width: maxWidth },
         })
@@ -106,7 +115,7 @@ export default class InstructionsScene extends Phaser.Scene {
     this.add
       .text(centerX, this.cameras.main.height - 30, "¡Buena suerte! Tienes 1 intento 🎲", {
         fontFamily: "Arial",
-        fontSize: isMobile ? "22px" : "28px",
+        fontSize: isMobile ? "13px" : "17px",
         fontStyle: "bold",
         color: "#ff5aa5",
         backgroundColor: "#ffffff",

@@ -32,12 +32,12 @@ export default class InstructionsScene extends Phaser.Scene {
 
     // Botón volver con imagen
     const backBtn = this.add
-      .image(40, 50, "btn-back-menu")
+      .image(60, 50, "btn-back-menu")
       .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to fit
-    const btnTargetWidth = isMobile ? 50 : 70;
+    // Scale button to fit (300% más = multiplicar por 4)
+    const btnTargetWidth = isMobile ? 200 : 280;
     const btnScale = btnTargetWidth / backBtn.width;
     backBtn.setScale(btnScale);
 
@@ -46,14 +46,14 @@ export default class InstructionsScene extends Phaser.Scene {
     });
 
     // Instructions content
-    const instructionsFontSize = isMobile ? "11px" : "14px";
-    const lineSpacing = isMobile ? 25 : 35;
+    const instructionsFontSize = isMobile ? "22px" : "28px";
+    const lineSpacing = isMobile ? 50 : 70;
     const startY = isMobile ? 110 : 120;
     const maxWidth = isMobile ? 280 : 600;
 
     const instructions = [
       "🎮 OBJETIVO DEL JUEGO",
-      "Tienes 60 segundos para hacer el máximo de matches.",
+      "Tienes 120 segundos para hacer el máximo de matches.",
       "",
       "💫 CÓMO JUGAR",
       "• Desliza (swipe) dos fichas adyacentes",
@@ -73,7 +73,7 @@ export default class InstructionsScene extends Phaser.Scene {
       "• Particulas de explosión en cada ficha",
       "",
       "❌ LÍMITE DE INTENTOS",
-      "• Tienes máximo 3 intentos por empleado",
+      "• Tienes máximo 1 intento por empleado",
       "• Después se guardan tus puntajes",
       "• Compite por el lugar más alto",
       "",
@@ -95,14 +95,17 @@ export default class InstructionsScene extends Phaser.Scene {
       const fontSize = line.startsWith("🎮") || line.startsWith("💫") ||
                       line.startsWith("🏆") || line.startsWith("⚡") ||
                       line.startsWith("❌") || line.startsWith("💡")
-        ? (isMobile ? "12px" : "16px")
+        ? (isMobile ? "24px" : "32px")
         : instructionsFontSize;
 
       this.add
         .text(centerX, yPos, line, {
           fontFamily: "Arial",
           fontSize: fontSize,
+          fontStyle: "bold",
           color: color,
+          backgroundColor: "#ffffff",
+          padding: { left: 10, right: 10, top: 5, bottom: 5 },
           align: "center",
           wordWrap: { width: maxWidth },
         })
@@ -113,11 +116,13 @@ export default class InstructionsScene extends Phaser.Scene {
 
     // Footer
     this.add
-      .text(centerX, this.cameras.main.height - 30, "¡Buena suerte! Tienes 3 intentos 🎲", {
+      .text(centerX, this.cameras.main.height - 30, "¡Buena suerte! Tienes 1 intento 🎲", {
         fontFamily: "Arial",
-        fontSize: isMobile ? "11px" : "14px",
+        fontSize: isMobile ? "22px" : "28px",
+        fontStyle: "bold",
         color: "#ff5aa5",
-        style: "italic",
+        backgroundColor: "#ffffff",
+        padding: { left: 10, right: 10, top: 5, bottom: 5 },
       })
       .setOrigin(0.5);
   }

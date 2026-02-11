@@ -33,12 +33,12 @@ export default class ScoresScene extends Phaser.Scene {
 
     // Botón volver con imagen
     const backBtn = this.add
-      .image(40, 50, "btn-back-menu")
+      .image(60, 50, "btn-back-menu")
       .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to fit
-    const btnTargetWidth = isMobile ? 50 : 70;
+    // Scale button to fit (250% más = multiplicar por 3.5)
+    const btnTargetWidth = isMobile ? 175 : 245;
     const btnScale = btnTargetWidth / backBtn.width;
     backBtn.setScale(btnScale);
 
@@ -75,52 +75,56 @@ export default class ScoresScene extends Phaser.Scene {
 
       // Display scores
       const startY = 120;
-      const rowHeight = isMobile ? 35 : 45;
+      const rowHeight = isMobile ? 70 : 85;
       const maxRows = Math.floor((this.cameras.main.height - startY - 60) / rowHeight);
       const displayScores = topScores.slice(0, maxRows);
 
-      const fontSizeRank = isMobile ? "13px" : "16px";
-      const fontSizeInfo = isMobile ? "12px" : "14px";
+      const fontSizeRank = isMobile ? "18px" : "21px";
+      const fontSizeInfo = isMobile ? "17px" : "19px";
 
       displayScores.forEach((score, index) => {
         const y = startY + index * rowHeight;
         const rank = index + 1;
         const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
 
-        // Rank and score
+        // Card background (rectangle with rounded corners effect)
+        const cardWidth = isMobile ? 260 : 500;
+        const cardX = centerX - cardWidth / 2;
+        const cardHeight = 50;
         this.add
-          .text(30, y, `${medal}`, {
+          .rectangle(centerX, y, cardWidth, cardHeight, 0xffffff, 0.95)
+          .setStrokeStyle(2, 0xff5aa5, 0.5);
+
+        // Rank and medal
+        this.add
+          .text(cardX + 20, y, `${medal}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
             color: "#ff5aa5",
-          });
+            fontStyle: "bold",
+          })
+          .setOrigin(0, 0.5);
 
-        // Employee number and name
+        // Player name only
         this.add
-          .text(80, y, `${score.employeeNumber} - ${score.playerName}`, {
+          .text(cardX + 70, y, `${score.playerName}`, {
             fontFamily: "Arial",
             fontSize: fontSizeInfo,
-            color: "#ffd1e8",
-          });
+            color: "#000000",
+            fontStyle: "bold",
+          })
+          .setOrigin(0, 0.5);
 
         // Score
         this.add
-          .text(centerX - 60, y, `${score.score}`, {
+          .text(centerX + cardWidth / 2 - 20, y, `${score.score}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
             color: "#ff5aa5",
+            fontStyle: "bold",
             align: "right",
-          });
-
-        // Date
-        const date = new Date(score.endTime);
-        const dateStr = date.toLocaleDateString("es-MX");
-        this.add
-          .text(centerX + 40, y, dateStr, {
-            fontFamily: "Arial",
-            fontSize: fontSizeInfo,
-            color: "#999",
-          });
+          })
+          .setOrigin(1, 0.5);
       });
 
       // Info text

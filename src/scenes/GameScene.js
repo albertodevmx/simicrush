@@ -36,7 +36,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Posición del tablero (centrado dinámicamente)
         this.boardX = (this.gameWidth - this.boardPx) / 2;
-        this.boardY = isMobile ? 185 : 220; // bajado 120px más
+        this.boardY = isMobile ? 105 : 140; // subido 80px
 
         // Tipos de piezas (0..N-1) -> KEYS de tus sprites (cargados en PreloadScene)
         this.types = [
@@ -58,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Score + tiempo
         this.score = 0;
-        this.timeLeft = 60; // 60 segundos
+        this.timeLeft = 120; // 120 segundos (2 minutos)
         this.gameOver = false;
     }
 
@@ -92,7 +92,7 @@ export default class GameScene extends Phaser.Scene {
 
         // HUD
         const isMobile = this.gameWidth < 500;
-        const fontSize = isMobile ? "14px" : "22px";
+        const fontSize = isMobile ? "19px" : "27px";
         const hudPadding = isMobile ? 12 : 20;
         const hudY = isMobile ? 10 : 15;
 
@@ -100,15 +100,21 @@ export default class GameScene extends Phaser.Scene {
             .text(hudPadding, hudY, `Cuadros destruidos: 0`, {
                 fontFamily: "Arial",
                 fontSize: fontSize,
+                fontStyle: "bold",
                 color: "#ffd1e8",
+                backgroundColor: "#000000",
+                padding: { left: 10, right: 10, top: 5, bottom: 5 },
             })
             .setDepth(10);
 
         this.timeText = this.add
-            .text(this.gameWidth - hudPadding, hudY, `01:00`, {
+            .text(this.gameWidth - hudPadding, hudY, `02:00`, {
                 fontFamily: "Arial",
                 fontSize: fontSize,
+                fontStyle: "bold",
                 color: "#ffffff",
+                backgroundColor: "#000000",
+                padding: { left: 10, right: 10, top: 5, bottom: 5 },
             })
             .setOrigin(1, 0)
             .setDepth(10);
@@ -116,13 +122,13 @@ export default class GameScene extends Phaser.Scene {
         // Botón menú con imagen
         const backY = isMobile ? 45 : 65;
         this.menuBtn = this.add
-            .image(hudPadding + 30, backY, "btn-back-menu")
+            .image(hudPadding + 40, backY, "btn-back-menu")
             .setOrigin(0, 0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(10);
 
-        // Scale button to fit
-        const btnTargetWidth = isMobile ? 50 : 70;
+        // Scale button to fit (250% más = multiplicar por 3.5)
+        const btnTargetWidth = isMobile ? 175 : 245;
         const btnScale = btnTargetWidth / this.menuBtn.width;
         this.menuBtn.setScale(btnScale);
 

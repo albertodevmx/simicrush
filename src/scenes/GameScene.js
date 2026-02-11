@@ -1320,12 +1320,18 @@ export default class GameScene extends Phaser.Scene {
                         this.matchEmitter.explode(15, x, y);
                     }
 
+                    // Destroy the glow first
+                    const glow = sprite.getData("glow");
+                    if (glow) {
+                        glow.destroy();
+                    }
+
                     // Destroy the sprite
                     sprite.destroy();
                     this.grid[r][c] = null;
 
-                    // Add score for the destroyed tile
-                    this.score += 10;
+                    // Add score for the destroyed tile (1 point per block)
+                    this.score += 1;
                 }
             }
         }

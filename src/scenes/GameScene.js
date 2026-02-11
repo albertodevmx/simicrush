@@ -1330,6 +1330,9 @@ export default class GameScene extends Phaser.Scene {
             // Drop and refill the board
             await this.dropAndRefill();
 
+            // Check for new matches that might have been created
+            await this.resolveMatchesLoop();
+
             // Allow interaction again
             this.isBusy = false;
         }

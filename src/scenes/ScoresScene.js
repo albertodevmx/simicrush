@@ -20,11 +20,12 @@ export default class ScoresScene extends Phaser.Scene {
     }
 
     // Título
-    const titleFontSize = isMobile ? "40px" : "56px";
+    const titleFontSize = isMobile ? "30px" : "46px";
     this.add
       .text(centerX, 40, "🏆 TOP PUNTAJES 🏆", {
         fontFamily: "Arial",
         fontSize: titleFontSize,
+        fontStyle: "bold",
         color: "#ff5aa5",
         stroke: "#ffffff",
         strokeThickness: isMobile ? 3 : 4,
@@ -33,12 +34,12 @@ export default class ScoresScene extends Phaser.Scene {
 
     // Botón volver con imagen
     const backBtn = this.add
-      .image(60, 50, "btn-back-menu")
+      .image(60, 70, "btn-back-menu")
       .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to fit (250% más = multiplicar por 3.5)
-    const btnTargetWidth = isMobile ? 175 : 245;
+    // Scale button to fit (60% del tamaño anterior)
+    const btnTargetWidth = isMobile ? 105 : 147;
     const btnScale = btnTargetWidth / backBtn.width;
     backBtn.setScale(btnScale);
 
@@ -74,7 +75,7 @@ export default class ScoresScene extends Phaser.Scene {
       }
 
       // Display scores
-      const startY = 120;
+      const startY = 105;
       const rowHeight = isMobile ? 35 : 42;
       const maxRows = Math.floor((this.cameras.main.height - startY - 60) / rowHeight);
       const displayScores = topScores.slice(0, maxRows);
@@ -107,7 +108,7 @@ export default class ScoresScene extends Phaser.Scene {
 
         // Player name only
         this.add
-          .text(cardX + 28, y, `${score.playerName}`, {
+          .text(cardX + 48, y, `${score.playerName}`, {
             fontFamily: "Arial",
             fontSize: fontSizeInfo,
             color: "#000000",

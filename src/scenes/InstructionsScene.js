@@ -10,9 +10,9 @@ export default class InstructionsScene extends Phaser.Scene {
     const centerY = this.cameras.main.height / 2;
     const isMobile = this.cameras.main.width < 500;
 
-    // Fondo con imagen
-    if (this.textures.exists("menu-bg")) {
-      this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
+    // Add instructions background image
+    if (this.textures.exists("instructions-bg")) {
+      this.add.image(centerX, centerY, "instructions-bg").setDisplaySize(
         this.cameras.main.width,
         this.cameras.main.height
       );
@@ -32,84 +32,5 @@ export default class InstructionsScene extends Phaser.Scene {
     backBtn.on("pointerdown", () => {
       this.scene.start("menu");
     });
-
-    // Instructions content
-    const instructionsFontSize = isMobile ? "13px" : "17px";
-    const lineSpacing = isMobile ? 25 : 35;
-    const startY = isMobile ? 100 : 110;
-    const maxWidth = isMobile ? 280 : 600;
-    const contentPadding = isMobile ? 20 : 30;
-
-    const instructions = [
-      "🎮 OBJETIVO DEL JUEGO",
-      "Tienes 120 segundos para hacer el máximo de matches.",
-      "",
-      "💫 CÓMO JUGAR",
-      "• Desliza (swipe) dos fichas adyacentes",
-      "• Crea líneas de 3 o más fichas iguales",
-      "",
-      "🏆 BONIFICACIONES",
-      "• Match de 5 fichas = Obtienes ❤️ CUPIDO ESPECIAL",
-      "",
-      "❌ LÍMITE DE INTENTOS",
-      "• Tienes máximo 1 intento por empleado",
-      "• Después se guardan tus puntajes",
-      "• Compite por el lugar más alto",
-      "",
-      "💡 ESTRATEGIA",
-      "• Planifica tus movimientos",
-      "• Busca hacer múltiples matches",
-      "• ¡Maximiza tu puntuación!",
-    ];
-
-    // Calculate the height of all instructions
-    const contentHeight = (instructions.length - 1) * lineSpacing + contentPadding * 2;
-    const contentCenterY = startY + contentHeight / 2 - contentPadding;
-
-    // Draw white background box for all instructions
-    const boxWidth = maxWidth + contentPadding * 2;
-    this.add
-      .rectangle(centerX, contentCenterY, boxWidth, contentHeight, 0xffffff, 0.95)
-      .setStrokeStyle(2, 0xff5aa5, 0.5);
-
-    let yPos = startY;
-    instructions.forEach((line) => {
-      const color = line.startsWith("🎮") || line.startsWith("💫") ||
-                   line.startsWith("🏆") || line.startsWith("⚡") ||
-                   line.startsWith("❌") || line.startsWith("💡")
-        ? "#ff5aa5"
-        : "#ffd1e8";
-
-      const fontSize = line.startsWith("🎮") || line.startsWith("💫") ||
-                      line.startsWith("🏆") || line.startsWith("⚡") ||
-                      line.startsWith("❌") || line.startsWith("💡")
-        ? (isMobile ? "14px" : "19px")
-        : instructionsFontSize;
-
-      this.add
-        .text(centerX, yPos, line, {
-          fontFamily: "Arial",
-          fontSize: fontSize,
-          fontStyle: "bold",
-          color: color,
-          align: "center",
-          wordWrap: { width: maxWidth },
-        })
-        .setOrigin(0.5);
-
-      yPos += lineSpacing;
-    });
-
-    // Footer
-    this.add
-      .text(centerX, this.cameras.main.height - 30, "¡Buena suerte! Tienes 1 intento 🎲", {
-        fontFamily: "Arial",
-        fontSize: isMobile ? "13px" : "17px",
-        fontStyle: "bold",
-        color: "#ff5aa5",
-        backgroundColor: "#ffffff",
-        padding: { left: 10, right: 10, top: 5, bottom: 5 },
-      })
-      .setOrigin(0.5);
   }
 }

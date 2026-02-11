@@ -10,27 +10,26 @@ export default class InstructionsScene extends Phaser.Scene {
     const centerY = this.cameras.main.height / 2;
     const isMobile = this.cameras.main.width < 500;
 
-    // Add instructions background image
+    // Add menu background as base layer
+    if (this.textures.exists("menu-bg")) {
+      this.add.image(centerX, centerY, "menu-bg")
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+        .setDepth(0);
+    }
+
+    // Add instructions image overlay on top
     if (this.textures.exists("instructions-bg")) {
-      this.add.image(centerX, centerY, "instructions-bg").setDisplaySize(
-        this.cameras.main.width,
-        this.cameras.main.height
-      );
-    } else {
-      // Fallback to menu background if instructions bg doesn't exist
-      if (this.textures.exists("menu-bg")) {
-        this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
-          this.cameras.main.width,
-          this.cameras.main.height
-        );
-      }
+      this.add.image(centerX, centerY, "instructions-bg")
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+        .setDepth(1);
     }
 
     // Botón volver con imagen
     const backBtn = this.add
       .image(15, 40, "btn-back-menu")
       .setOrigin(0, 0.5)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: true })
+      .setDepth(10);
 
     // Scale button to fit (80% del tamaño anterior)
     const btnTargetWidth = isMobile ? 160 : 224;

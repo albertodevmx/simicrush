@@ -17,10 +17,10 @@ export default class InstructionsScene extends Phaser.Scene {
         .setDepth(0);
     }
 
-    // Add instructions image overlay on top
+    // Add instructions image overlay on top (80% scale, offset down 45px)
     if (this.textures.exists("instructions-bg")) {
-      this.add.image(centerX, centerY, "instructions-bg")
-        .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+      this.add.image(centerX, centerY + 45, "instructions-bg")
+        .setDisplaySize(this.cameras.main.width * 0.8, this.cameras.main.height * 0.8)
         .setDepth(1);
     }
 

@@ -280,6 +280,7 @@ export default class GameScene extends Phaser.Scene {
         sprite.setData("c", c);
         sprite.setData("glow", glow);
         sprite.setData("baseScale", scale);
+        sprite.setData("clickCount", 0); // Easter egg: track clicks on this icon
 
         return sprite;
     }
@@ -348,6 +349,11 @@ export default class GameScene extends Phaser.Scene {
         const minSwipeDistance = 30;
 
         if (distance < minSwipeDistance) {
+            // Detect tap on icon (easter egg: 7 taps to destroy)
+            const tile = this.grid[this.swipeStart.r] && this.grid[this.swipeStart.r][this.swipeStart.c];
+            if (tile && tile.sprite) {
+                this.detectIconTap(tile.sprite);
+            }
             this.swipeStart = null;
             return;
         }
@@ -1273,6 +1279,48 @@ export default class GameScene extends Phaser.Scene {
 
     cellCenterY(r) {
         return this.boardY + r * this.cell + this.cell / 2;
+    }
+
+    // Easter egg: Detect 7 taps on same icon
+    detectIconTap(sprite) {
+        if (!sprite) return;
+
+        // Get current click count
+        let clickCount = sprite.getData("clickCount") || 0;
+        clickCount++;
+        sprite.setData("clickCount", clickCount);
+
+        // If 7 clicks on this icon, destroy it
+        if (clickCount >= 7) {
+            const x = sprite.x;
+            const y = sprite.y;
+
+            // Create explosion particles
+            if (this.matchEmitter) {
+                this.matchEmitter.explode(20, x, y);
+            }
+
+            // Destroy the glow
+            const glow = sprite.getData("glow");
+            if (glow) {
+                glow.destroy();
+            }
+
+            // Destroy the sprite
+            const r = sprite.getData("r");
+            const c = sprite.getData("c");
+            sprite.destroy();
+
+            // Remove from grid
+            if (this.grid[r] && this.grid[r][c]) {
+                this.grid[r][c] = null;
+            }
+
+            // Play sound effect
+            if (this.sfx && this.sfx.pop) {
+                this.sfx.pop.play();
+            }
+        }
     }
 
     // Easter egg: Detect rapid center taps

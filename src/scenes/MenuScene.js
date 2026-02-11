@@ -128,12 +128,10 @@ export default class MenuScene extends Phaser.Scene {
 
   setupButtonEffects(btn) {
     btn.on("pointerover", () => {
-      this.tweens.add({ targets: btn, scale: 1.06, duration: 120, ease: "Sine.out" });
       btn.setTint(0xffaacc);
     });
 
     btn.on("pointerout", () => {
-      this.tweens.add({ targets: btn, scale: 1.0, duration: 120, ease: "Sine.out" });
       btn.clearTint();
     });
   }

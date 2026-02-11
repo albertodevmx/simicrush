@@ -75,12 +75,12 @@ export default class ScoresScene extends Phaser.Scene {
 
       // Display scores
       const startY = 120;
-      const rowHeight = isMobile ? 70 : 85;
+      const rowHeight = isMobile ? 35 : 42;
       const maxRows = Math.floor((this.cameras.main.height - startY - 60) / rowHeight);
       const displayScores = topScores.slice(0, maxRows);
 
-      const fontSizeRank = isMobile ? "18px" : "21px";
-      const fontSizeInfo = isMobile ? "17px" : "19px";
+      const fontSizeRank = isMobile ? "16px" : "19px";
+      const fontSizeInfo = isMobile ? "15px" : "17px";
 
       displayScores.forEach((score, index) => {
         const y = startY + index * rowHeight;
@@ -90,14 +90,14 @@ export default class ScoresScene extends Phaser.Scene {
         // Card background (rectangle with rounded corners effect)
         const cardWidth = isMobile ? 260 : 500;
         const cardX = centerX - cardWidth / 2;
-        const cardHeight = 50;
+        const cardHeight = isMobile ? 25 : 30;
         this.add
           .rectangle(centerX, y, cardWidth, cardHeight, 0xffffff, 0.95)
           .setStrokeStyle(2, 0xff5aa5, 0.5);
 
         // Rank and medal
         this.add
-          .text(cardX + 20, y, `${medal}`, {
+          .text(cardX + 8, y, `${medal}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
             color: "#ff5aa5",
@@ -107,7 +107,7 @@ export default class ScoresScene extends Phaser.Scene {
 
         // Player name only
         this.add
-          .text(cardX + 70, y, `${score.playerName}`, {
+          .text(cardX + 28, y, `${score.playerName}`, {
             fontFamily: "Arial",
             fontSize: fontSizeInfo,
             color: "#000000",
@@ -117,7 +117,7 @@ export default class ScoresScene extends Phaser.Scene {
 
         // Score
         this.add
-          .text(centerX + cardWidth / 2 - 20, y, `${score.score}`, {
+          .text(centerX + cardWidth / 2 - 8, y, `${score.score}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
             color: "#ff5aa5",

@@ -12,6 +12,7 @@ export default class GameScene extends Phaser.Scene {
         this.hintTimer = null;
         this.hintGraphics = null;
         this.isFirstMatchInCascade = false;
+        this.centerTaps = []; // Easter egg: track rapid center taps
     }
 
     init() {
@@ -211,7 +212,10 @@ export default class GameScene extends Phaser.Scene {
         }
 
         // Input - Swipe gesture detection
-        this.input.on("pointerdown", (pointer) => this.onSwipeStart(pointer));
+        this.input.on("pointerdown", (pointer) => {
+            this.onSwipeStart(pointer);
+            this.detectCenterTap(pointer); // Easter egg detection
+        });
         this.input.on("pointerup", (pointer) => this.onSwipeEnd(pointer));
 
         // Timer (cada 1 segundo)
@@ -1269,5 +1273,66 @@ export default class GameScene extends Phaser.Scene {
 
     cellCenterY(r) {
         return this.boardY + r * this.cell + this.cell / 2;
+    }
+
+    // Easter egg: Detect rapid center taps
+    detectCenterTap(pointer) {
+        const centerX = this.gameWidth / 2;
+        const centerY = this.gameHeight / 2;
+        const tapRadius = 120; // Radius of center tap detection zone
+
+        // Check if tap is in center area
+        const distance = Phaser.Math.Distance.Between(pointer.x, pointer.y, centerX, centerY);
+        if (distance > tapRadius) return;
+
+        // Add tap with timestamp
+        const now = this.time.now;
+        this.centerTaps.push(now);
+
+        // Remove taps older than 3 seconds (3000ms)
+        this.centerTaps = this.centerTaps.filter(tapTime => now - tapTime < 3000);
+
+        // If 5 taps within 3 seconds, trigger easter egg
+        if (this.centerTaps.length >= 5) {
+            this.triggerEasterEgg();
+            this.centerTaps = []; // Reset after triggering
+        }
+    }
+
+    // Easter egg: Explode all blocks
+    triggerEasterEgg() {
+        const centerX = this.gameWidth / 2;
+        const centerY = this.gameHeight / 2;
+
+        // Destroy all tiles and create particles
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] && this.grid[r][c].sprite) {
+                    const sprite = this.grid[r][c].sprite;
+                    const x = this.cellCenterX(c);
+                    const y = this.cellCenterY(r);
+
+                    // Create explosion particles
+                    if (this.matchEmitter) {
+                        this.matchEmitter.explode(15, x, y);
+                    }
+
+                    // Destroy the sprite
+                    sprite.destroy();
+                    this.grid[r][c] = null;
+
+                    // Add score for the destroyed tile
+                    this.score += 10;
+                }
+            }
+        }
+
+        // Update score display
+        this.scoreText.setText(`Cuadros destruidos: ${this.score}`);
+
+        // Play sound effect
+        if (this.sfx && this.sfx.pop) {
+            this.sfx.pop.play();
+        }
     }
 }

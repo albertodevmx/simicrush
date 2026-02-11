@@ -5,27 +5,42 @@ export default class SplashScene2 extends Phaser.Scene {
     super("splash2");
   }
 
+  preload() {
+    // Load logo for this splash scene
+    this.load.image("simiwebs-logo", "/assets/simiwebs-logo.png");
+  }
+
   create() {
     const centerX = this.cameras.main.width / 2;
     const centerY = this.cameras.main.height / 2;
 
-    // Add background
-    this.cameras.main.setBackgroundColor("#120018");
+    // Set background to white
+    this.cameras.main.setBackgroundColor("#ffffff");
 
-    // Add text
-    this.add
-      .text(centerX, centerY, "Simi Webs", {
-        fontFamily: "Arial",
-        fontSize: "48px",
-        fontStyle: "bold",
-        color: "#ff5aa5",
-        align: "center",
-      })
-      .setOrigin(0.5);
+    // Add logo image in center with fadeIn
+    const logo = this.add.image(centerX, centerY, "simiwebs-logo")
+      .setOrigin(0.5)
+      .setAlpha(0);
 
-    // Wait 3 seconds then go to preload scene
-    this.time.delayedCall(3000, () => {
-      this.scene.start("preload");
+    // FadeIn animation
+    this.tweens.add({
+      targets: logo,
+      alpha: 1,
+      duration: 500,
+      ease: "Linear"
+    });
+
+    // Wait 1.5 seconds then fadeOut and go to preload scene
+    this.time.delayedCall(1500, () => {
+      this.tweens.add({
+        targets: logo,
+        alpha: 0,
+        duration: 300,
+        ease: "Linear",
+        onComplete: () => {
+          this.scene.start("preload");
+        }
+      });
     });
   }
 }

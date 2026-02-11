@@ -1282,7 +1282,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     // Easter egg: Detect 7 taps on same icon
-    detectIconTap(sprite) {
+    async detectIconTap(sprite) {
         if (!sprite) return;
 
         // Get current click count
@@ -1292,6 +1292,9 @@ export default class GameScene extends Phaser.Scene {
 
         // If 7 clicks on this icon, destroy it
         if (clickCount >= 7) {
+            // Prevent interaction while processing
+            this.isBusy = true;
+
             const x = sprite.x;
             const y = sprite.y;
 
@@ -1320,6 +1323,15 @@ export default class GameScene extends Phaser.Scene {
             if (this.sfx && this.sfx.pop) {
                 this.sfx.pop.play();
             }
+
+            // Wait a moment for particles
+            await this.time.delayedCall(300, () => {});
+
+            // Drop and refill the board
+            await this.dropAndRefill();
+
+            // Allow interaction again
+            this.isBusy = false;
         }
     }
 

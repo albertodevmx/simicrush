@@ -18,26 +18,14 @@ export default class InstructionsScene extends Phaser.Scene {
       );
     }
 
-    // Título
-    const titleFontSize = isMobile ? "32px" : "48px";
-    this.add
-      .text(centerX, 40, "📖 INSTRUCCIONES", {
-        fontFamily: "Arial",
-        fontSize: titleFontSize,
-        color: "#ff5aa5",
-        stroke: "#ffffff",
-        strokeThickness: isMobile ? 3 : 4,
-      })
-      .setOrigin(0.5);
-
     // Botón volver con imagen
     const backBtn = this.add
-      .image(60, 50, "btn-back-menu")
+      .image(15, 40, "btn-back-menu")
       .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to fit (300% más = multiplicar por 4)
-    const btnTargetWidth = isMobile ? 200 : 280;
+    // Scale button to fit (80% del tamaño anterior)
+    const btnTargetWidth = isMobile ? 160 : 224;
     const btnScale = btnTargetWidth / backBtn.width;
     backBtn.setScale(btnScale);
 
@@ -48,7 +36,7 @@ export default class InstructionsScene extends Phaser.Scene {
     // Instructions content
     const instructionsFontSize = isMobile ? "22px" : "28px";
     const lineSpacing = isMobile ? 50 : 70;
-    const startY = isMobile ? 110 : 120;
+    const startY = isMobile ? 50 : 60;
     const maxWidth = isMobile ? 280 : 600;
 
     const instructions = [

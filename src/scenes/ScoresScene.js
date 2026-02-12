@@ -35,8 +35,8 @@ export default class ScoresScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    // Scale button to fit (60% del tamaño anterior)
-    const btnTargetWidth = isMobile ? 105 : 147;
+    // Scale button to fit (60% + 30% increase)
+    const btnTargetWidth = isMobile ? 137 : 191;
     const btnScale = btnTargetWidth / backBtn.width;
     backBtn.setScale(btnScale);
 

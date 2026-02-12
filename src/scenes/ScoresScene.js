@@ -26,9 +26,9 @@ export default class ScoresScene extends Phaser.Scene {
       });
     }
 
-    // Título con imagen (50px down, 15px up from current position)
+    // Título con imagen (20px down)
     const titleImg = this.add
-      .image(centerX, 75, "top-scores-title")
+      .image(centerX, 95, "top-scores-title")
       .setOrigin(0.5)
       .setAlpha(0);
 
@@ -99,8 +99,8 @@ export default class ScoresScene extends Phaser.Scene {
         return;
       }
 
-      // Display scores (80px higher)
-      const startY = 165;
+      // Display scores (35px down)
+      const startY = 200;
       const horizontalPadding = 50;
       const rowHeight = isMobile ? 35 : 42;
       const maxRows = 10;

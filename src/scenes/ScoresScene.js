@@ -37,17 +37,20 @@ export default class ScoresScene extends Phaser.Scene {
     const titleScale = titleTargetWidth / titleImg.width;
     titleImg.setScale(titleScale);
 
-    // BounceIn animation for title
+    // BounceIn animation for title (scale + alpha with bounce effect)
+    titleImg.setScale(titleScale * 0.5);
     this.tweens.add({
       targets: titleImg,
+      scaleX: titleScale,
+      scaleY: titleScale,
       alpha: 1,
       duration: 500,
       ease: "Bounce.out"
     });
 
-    // Botón volver con imagen (centered, 360px from bottom - 120px more down)
+    // Botón volver con imagen (centered, 100px from bottom)
     const backBtn = this.add
-      .image(centerX, this.cameras.main.height - 360, "btn-back-menu")
+      .image(centerX, this.cameras.main.height - 100, "btn-back-menu")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .setAlpha(0);

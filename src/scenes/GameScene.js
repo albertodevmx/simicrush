@@ -47,6 +47,7 @@ export default class GameScene extends Phaser.Scene {
             "tile_coffee",
             "tile_plush",
             "tile_rocket",
+            "tile_cupido",
         ];
 
         // Special tile type (not in normal types)
@@ -244,7 +245,13 @@ export default class GameScene extends Phaser.Scene {
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
-                const type = this.randomTypeAvoidingMatch(r, c);
+                let type = this.randomTypeAvoidingMatch(r, c);
+
+                // 30% probability of spawning cupido instead (index 6 is cupido)
+                if (Phaser.Math.Between(0, 100) < 30) {
+                    type = 6; // Cupido type index
+                }
+
                 const sprite = this.createTileSprite(r, c, type);
 
                 this.grid[r][c] = { type, sprite };
@@ -287,9 +294,10 @@ export default class GameScene extends Phaser.Scene {
 
     randomTypeAvoidingMatch(r, c) {
         // Evita formar match de 3 inmediato al generar
+        // Only generate normal types (0-5), not cupido (6)
         let tries = 0;
         while (tries < 30) {
-            const t = Phaser.Math.Between(0, this.types.length - 1);
+            const t = Phaser.Math.Between(0, 5); // Only normal types
 
             // Checa izquierda
             const left1 = c - 1 >= 0 ? this.grid[r][c - 1]?.type : null;
@@ -309,7 +317,7 @@ export default class GameScene extends Phaser.Scene {
 
             return t;
         }
-        return Phaser.Math.Between(0, this.types.length - 1);
+        return Phaser.Math.Between(0, 5); // Only normal types
     }
 
     // ---------- Input / Swipe System ----------
@@ -689,7 +697,7 @@ export default class GameScene extends Phaser.Scene {
 
                 // Refill: crear nuevos arriba para caer
                 for (let r = writeRow; r >= 0; r--) {
-                    const type = Phaser.Math.Between(0, this.types.length - 1);
+                    const type = Phaser.Math.Between(0, 5); // Only normal types (0-5), not cupido
 
                     const spawnY = this.cellCenterY(r) - this.cell * (writeRow - r + 1);
                     const sprite = this.createTileSprite(r, c, type, spawnY);
@@ -1117,24 +1125,22 @@ export default class GameScene extends Phaser.Scene {
             existingTile.sprite.destroy();
         }
 
-        // Create super combo tile
+        // Create super combo tile with cupido image
         const x = this.cellCenterX(c);
         const y = this.cellCenterY(r);
 
-        // Create a graphics-based super combo tile with colorful box
-        const sprite = this.make.graphics({ x, y, add: false });
-        sprite.fillStyle(0xff5aa5, 1);
-        sprite.fillRect(-this.cell / 2 + 5, -this.cell / 2 + 5, this.cell - 10, this.cell - 10);
+        // Create sprite from cupido image
+        const sprite = this.add.image(x, y, "tile_cupido").setOrigin(0.5);
+        sprite.setDisplaySize(this.cell - 10, this.cell - 10);
 
-        // Add borders in different colors
-        sprite.lineStyle(3, 0xffd1e8);
-        sprite.strokeRect(-this.cell / 2 + 3, -this.cell / 2 + 3, this.cell - 6, this.cell - 6);
-
-        sprite.lineStyle(2, 0xff2d85);
-        sprite.strokeRect(-this.cell / 2 + 7, -this.cell / 2 + 7, this.cell - 14, this.cell - 14);
+        // Add glow effect
+        const glow = this.make.graphics({ x, y, add: false });
+        glow.lineStyle(2, 0xffd1e8, 0.6);
+        glow.strokeCircle(0, 0, this.cell / 2);
+        this.add.existing(glow);
+        sprite.setData("glow", glow);
 
         sprite.setDepth(2);
-        this.add.existing(sprite);
 
         // Store super combo data
         const tile = {

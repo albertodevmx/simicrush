@@ -69,6 +69,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("tile_coffee", "/assets/tiles/coffee_cup.png");
     this.load.image("tile_plush", "/assets/tiles/plush_doctor.png");
     this.load.image("tile_rocket", "/assets/tiles/rocket.png");
+    this.load.image("tile_cupido", "/assets/tiles/cupido.png");
 
     // --- AUDIO ---
     this.load.audio("bgm_fondo", "assets/audio/fondo.mp3");

@@ -19,17 +19,17 @@ export default class SplashScene2 extends Phaser.Scene {
     // Set background to white
     this.cameras.main.setBackgroundColor("#ffffff");
 
-    // Scale factor: 40% of current size
-    const animationScale = 0.4;
+    // Scale factor: 20% of original size (50% of 0.4)
+    const animationScale = 0.2;
 
     // Add simbolo1 (left) with fade and scale
-    const simbolo1 = this.add.image(centerX - 2.5, centerY, "simbolo1")
+    const simbolo1 = this.add.image(centerX - 1.25, centerY, "simbolo1")
       .setOrigin(1, 0.5)
       .setAlpha(0)
       .setScale(animationScale);
 
     // Add simbolo2 (right) with fade and scale
-    const simbolo2 = this.add.image(centerX + 2.5, centerY, "simbolo2")
+    const simbolo2 = this.add.image(centerX + 1.25, centerY, "simbolo2")
       .setOrigin(0, 0.5)
       .setAlpha(0)
       .setScale(animationScale);
@@ -48,10 +48,10 @@ export default class SplashScene2 extends Phaser.Scene {
       ease: "Linear"
     });
 
-    // Calculate position: 88px below the top of simbolo1 (80px + 8px more)
+    // Calculate position: 44px below the top of simbolo1 (50% reduction: 88 → 44)
     const simbolo1DisplayHeight = simbolo1.displayHeight;
     const topOfSimbolo1 = centerY - (simbolo1DisplayHeight / 2);
-    const targetYSimbolo2 = topOfSimbolo1 + 88;
+    const targetYSimbolo2 = topOfSimbolo1 + 44;
 
     // After 500ms, animate simbolo2 down (200% slower: 300ms * 3 = 900ms)
     this.time.delayedCall(500, () => {
@@ -66,8 +66,8 @@ export default class SplashScene2 extends Phaser.Scene {
     // After simbolo2 finishes descending (500 + 900 + 300ms delay), start imiwebs animation
     // Also move symbols left immediately at 1450ms
     this.time.delayedCall(1450, () => {
-      // Distance to move symbols left
-      const moveDistance = 80;
+      // Distance to move symbols left (50% reduction: 80 → 40)
+      const moveDistance = 40;
 
       // Horizontal overlap: 15% of imiwebs width
       const overlapAmount = imiwebs.displayWidth * 0.15;
@@ -83,15 +83,15 @@ export default class SplashScene2 extends Phaser.Scene {
 
     // Start imiwebs animation 300ms after simbolo2 finishes (at 1700ms)
     this.time.delayedCall(1700, () => {
-      // Distance to move symbols left
-      const moveDistance = 80;
+      // Distance to move symbols left (50% reduction: 80 → 40)
+      const moveDistance = 40;
 
       // Horizontal overlap: 15% of imiwebs width
       const overlapAmount = imiwebs.displayWidth * 0.15;
 
-      // Final position: 20px to the left and 15px up from current position
-      const finalXMovement = moveDistance - overlapAmount - 20;
-      const finalYMovement = -15;
+      // Final position: 50% reduction (20px → 10px left, 15px → 7.5px up)
+      const finalXMovement = moveDistance - overlapAmount - 10;
+      const finalYMovement = -7.5;
 
       // FadeIn and move imiwebs
       this.tweens.add({

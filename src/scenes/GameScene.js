@@ -768,10 +768,10 @@ export default class GameScene extends Phaser.Scene {
         overlay.on("pointerdown", () => {});
         overlay.on("pointerup", () => {});
 
-        // Panel dimensions (responsive) - height reduced by 70%
+        // Panel dimensions (responsive) - increased by 350%
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
         const basePanelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
-        const panelHeight = basePanelHeight * 0.3;
+        const panelHeight = basePanelHeight * 4.5;
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)

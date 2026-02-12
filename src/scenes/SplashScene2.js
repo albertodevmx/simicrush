@@ -98,9 +98,9 @@ export default class SplashScene2 extends Phaser.Scene {
       // FadeIn and move imiwebs horizontally only
       this.tweens.add({
         targets: imiwebs,
-        alpha: 1,
+        alpha: { from: 0, to: 1 },
         x: "+=" + finalXMovement,
-        duration: 200,
+        duration: 700,
         ease: "Linear"
       });
     });

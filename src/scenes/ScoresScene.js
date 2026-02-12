@@ -13,32 +13,57 @@ export default class ScoresScene extends Phaser.Scene {
 
     // Fondo con imagen
     if (this.textures.exists("menu-bg")) {
-      this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
-        this.cameras.main.width,
-        this.cameras.main.height
-      );
+      const bg = this.add.image(centerX, centerY, "menu-bg")
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+        .setAlpha(0);
+
+      // FadeIn animation for background (500ms)
+      this.tweens.add({
+        targets: bg,
+        alpha: 1,
+        duration: 500,
+        ease: "Linear"
+      });
     }
 
     // Título con imagen (50px down)
     const titleImg = this.add
       .image(centerX, 90, "top-scores-title")
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setAlpha(0);
 
     // Scale title to 80% of screen width
     const titleTargetWidth = this.cameras.main.width * 0.8;
     const titleScale = titleTargetWidth / titleImg.width;
     titleImg.setScale(titleScale);
 
-    // Botón volver con imagen (centered, 140px from bottom)
+    // BounceIn animation for title
+    this.tweens.add({
+      targets: titleImg,
+      alpha: 1,
+      duration: 500,
+      ease: "Bounce.out"
+    });
+
+    // Botón volver con imagen (centered, 240px from bottom - 100px down)
     const backBtn = this.add
-      .image(centerX, this.cameras.main.height - 140, "btn-back-menu")
+      .image(centerX, this.cameras.main.height - 240, "btn-back-menu")
       .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: true })
+      .setAlpha(0);
 
     // Scale button to fit (60% + 30% increase)
     const btnTargetWidth = isMobile ? 137 : 191;
     const btnScale = btnTargetWidth / backBtn.width;
     backBtn.setScale(btnScale);
+
+    // BounceIn animation for back button from bottom
+    this.tweens.add({
+      targets: backBtn,
+      alpha: 1,
+      duration: 500,
+      ease: "Bounce.out"
+    });
 
     backBtn.on("pointerdown", () => {
       this.scene.start("menu");
@@ -71,11 +96,11 @@ export default class ScoresScene extends Phaser.Scene {
         return;
       }
 
-      // Display scores (90px + 50px lower)
-      const startY = 245;
+      // Display scores (80px higher)
+      const startY = 165;
       const horizontalPadding = 50;
       const rowHeight = isMobile ? 35 : 42;
-      const maxRows = Math.floor((this.cameras.main.height - startY - 60) / rowHeight);
+      const maxRows = 10;
       const displayScores = topScores.slice(0, maxRows);
 
       const fontSizeRank = isMobile ? "16px" : "19px";
@@ -91,32 +116,35 @@ export default class ScoresScene extends Phaser.Scene {
         const cardX = horizontalPadding;
         const cardHeight = isMobile ? 25 : 30;
         const cardCenterX = horizontalPadding + cardWidth / 2;
-        this.add
+        const card = this.add
           .rectangle(cardCenterX, y, cardWidth, cardHeight, 0xffffff, 0.95)
-          .setStrokeStyle(2, 0xff5aa5, 0.5);
+          .setStrokeStyle(2, 0xff5aa5, 0.5)
+          .setAlpha(0);
 
         // Rank and medal
-        this.add
+        const medalText = this.add
           .text(cardX + 8, y, `${medal}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
             color: "#ff5aa5",
             fontStyle: "bold",
           })
-          .setOrigin(0, 0.5);
+          .setOrigin(0, 0.5)
+          .setAlpha(0);
 
         // Player name only
-        this.add
+        const nameText = this.add
           .text(cardX + 48, y, `${score.playerName}`, {
             fontFamily: "Arial",
             fontSize: fontSizeInfo,
             color: "#000000",
             fontStyle: "bold",
           })
-          .setOrigin(0, 0.5);
+          .setOrigin(0, 0.5)
+          .setAlpha(0);
 
         // Score
-        this.add
+        const scoreText = this.add
           .text(cardCenterX + cardWidth / 2 - 8, y, `${score.score}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
@@ -124,7 +152,18 @@ export default class ScoresScene extends Phaser.Scene {
             fontStyle: "bold",
             align: "right",
           })
-          .setOrigin(1, 0.5);
+          .setOrigin(1, 0.5)
+          .setAlpha(0);
+
+        // Staggered fadeIn animation for each row
+        const delay = 100 + (index * 80);
+        this.tweens.add({
+          targets: [card, medalText, nameText, scoreText],
+          alpha: 1,
+          duration: 400,
+          delay: delay,
+          ease: "Linear"
+        });
       });
 
       // Info text

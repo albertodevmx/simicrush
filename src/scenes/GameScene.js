@@ -526,7 +526,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Helper function to check if two tiles can match
         const canMatch = (type1, type2) => {
-            if (!type1 || !type2) return false;
+            if (type1 == null || type2 == null) return false;
             // Cupido matches with anything (including other cupidos)
             if (type1 === this.CUPIDO_TYPE || type2 === this.CUPIDO_TYPE) return true;
             // Otherwise, types must be exactly equal

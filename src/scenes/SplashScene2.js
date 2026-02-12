@@ -48,10 +48,10 @@ export default class SplashScene2 extends Phaser.Scene {
       ease: "Linear"
     });
 
-    // Calculate position: 40px below the top of simbolo1
+    // Calculate position: 80px below the top of simbolo1 (40px + 40px more)
     const simbolo1DisplayHeight = simbolo1.displayHeight;
     const topOfSimbolo1 = centerY - (simbolo1DisplayHeight / 2);
-    const targetYSimbolo2 = topOfSimbolo1 + 40;
+    const targetYSimbolo2 = topOfSimbolo1 + 80;
 
     // After 500ms, animate simbolo2 down (200% slower: 300ms * 3 = 900ms)
     this.time.delayedCall(500, () => {
@@ -63,13 +63,11 @@ export default class SplashScene2 extends Phaser.Scene {
       });
     });
 
-    // After simbolo2 finishes descending (500 + 900 + 50ms buffer), start second phase
+    // After simbolo2 finishes descending (500 + 900 + 300ms delay), start imiwebs animation
+    // Also move symbols left immediately at 1450ms
     this.time.delayedCall(1450, () => {
       // Distance to move symbols left
       const moveDistance = 80;
-
-      // Vertical offset: 30% above center of the symbol group
-      const verticalOffset = centerY * 0.3;
 
       // Horizontal overlap: 15% of imiwebs width
       const overlapAmount = imiwebs.displayWidth * 0.15;
@@ -81,13 +79,21 @@ export default class SplashScene2 extends Phaser.Scene {
         duration: 700,
         ease: "Linear"
       });
+    });
 
-      // FadeIn and move imiwebs to the right and up
+    // Start imiwebs animation 300ms after simbolo2 finishes (at 1700ms)
+    this.time.delayedCall(1700, () => {
+      // Distance to move symbols left
+      const moveDistance = 80;
+
+      // Horizontal overlap: 15% of imiwebs width
+      const overlapAmount = imiwebs.displayWidth * 0.15;
+
+      // FadeIn and move imiwebs to the right (horizontal only)
       this.tweens.add({
         targets: imiwebs,
         alpha: 1,
         x: "+=" + (moveDistance - overlapAmount),
-        y: "-=" + verticalOffset,
         duration: 700,
         ease: "Linear"
       });
@@ -104,8 +110,8 @@ export default class SplashScene2 extends Phaser.Scene {
       }
     };
 
-    // FadeOut after all animations complete (3150ms = 1450 + 700 + 1000)
-    this.time.delayedCall(3150, () => {
+    // FadeOut after all animations complete (3400ms = 1700 + 700 + 1000)
+    this.time.delayedCall(3400, () => {
       this.tweens.add({
         targets: [simbolo1, simbolo2, imiwebs],
         alpha: 0,

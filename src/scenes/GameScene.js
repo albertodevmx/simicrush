@@ -231,6 +231,9 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.updateTimeText();
+
+        // TESTING MODE: Uncomment the line below to skip directly to end game screen
+        // this.time.delayedCall(100, () => { this.score = 42; this.endGame(); });
     }
 
 

@@ -26,9 +26,9 @@ export default class ScoresScene extends Phaser.Scene {
       });
     }
 
-    // Título con imagen (50px down)
+    // Título con imagen (50px down, 15px up from current position)
     const titleImg = this.add
-      .image(centerX, 90, "top-scores-title")
+      .image(centerX, 75, "top-scores-title")
       .setOrigin(0.5)
       .setAlpha(0);
 
@@ -45,9 +45,9 @@ export default class ScoresScene extends Phaser.Scene {
       ease: "Bounce.out"
     });
 
-    // Botón volver con imagen (centered, 240px from bottom - 100px down)
+    // Botón volver con imagen (centered, 360px from bottom - 120px more down)
     const backBtn = this.add
-      .image(centerX, this.cameras.main.height - 240, "btn-back-menu")
+      .image(centerX, this.cameras.main.height - 360, "btn-back-menu")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .setAlpha(0);

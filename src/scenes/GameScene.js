@@ -769,7 +769,7 @@ export default class GameScene extends Phaser.Scene {
         overlay.on("pointerup", () => {});
 
         // Panel dimensions (responsive) - compact fixed height
-        const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
+        const panelWidth = this.gameWidth * 0.8;
         const panelHeight = isMobile ? 300 : 320;  // Fixed compact height
 
         const panel = this.add

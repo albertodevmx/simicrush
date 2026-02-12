@@ -45,31 +45,31 @@ export default class PreloadScene extends Phaser.Scene {
     });
 
     // Menu Assets
-    this.load.image("menu-bg", "/assets/menu/fondo-menu.png");
-    this.load.image("menu-title", "/assets/menu/titulo.png");
-    this.load.image("btn-enter", "/assets/menu/btn-entrar.png");
-    this.load.image("btn-scores", "/assets/menu/btn-puntajes.png");
-    this.load.image("btn-instructions", "/assets/menu/btn-instrucciones.png");
-    this.load.image("btn-back-menu", "/assets/menu/btn-volver-menu.png");
-    this.load.image("instructions-bg", "/assets/fondoinstrucciones.png");
-    this.load.image("top-scores-title", "/assets/top-puntajes-letrero.png");
+    this.load.image("menu-bg", "assets/menu/fondo-menu.png");
+    this.load.image("menu-title", "assets/menu/titulo.png");
+    this.load.image("btn-enter", "assets/menu/btn-entrar.png");
+    this.load.image("btn-scores", "assets/menu/btn-puntajes.png");
+    this.load.image("btn-instructions", "assets/menu/btn-instrucciones.png");
+    this.load.image("btn-back-menu", "assets/menu/btn-volver-menu.png");
+    this.load.image("instructions-bg", "assets/fondoinstrucciones.png");
+    this.load.image("top-scores-title", "assets/top-puntajes-letrero.png");
 
     // Splash Scene 2 Logo Parts (for animation)
-    this.load.image("simbolo1", "/assets/simbolo1.png");
-    this.load.image("simbolo2", "/assets/simbolo2.png");
-    this.load.image("imiwebs", "/assets/imiwebs.png");
+    this.load.image("simbolo1", "assets/simbolo1.png");
+    this.load.image("simbolo2", "assets/simbolo2.png");
+    this.load.image("imiwebs", "assets/imiwebs.png");
 
     // Game Assets
-    this.load.image("game-bg", "/assets/menu/fondo-juego.png");
+    this.load.image("game-bg", "assets/menu/fondo-juego.png");
 
     // Tiles (6)
-    this.load.image("tile_heart_s", "/assets/tiles/heart_s.png");
-    this.load.image("tile_syringe", "/assets/tiles/syringe.png");
-    this.load.image("tile_dog", "/assets/tiles/dog_face.png");
-    this.load.image("tile_coffee", "/assets/tiles/coffee_cup.png");
-    this.load.image("tile_plush", "/assets/tiles/plush_doctor.png");
-    this.load.image("tile_rocket", "/assets/tiles/rocket.png");
-    this.load.image("tile_cupido", "/assets/tiles/cupido.png");
+    this.load.image("tile_heart_s", "assets/tiles/heart_s.png");
+    this.load.image("tile_syringe", "assets/tiles/syringe.png");
+    this.load.image("tile_dog", "assets/tiles/dog_face.png");
+    this.load.image("tile_coffee", "assets/tiles/coffee_cup.png");
+    this.load.image("tile_plush", "assets/tiles/plush_doctor.png");
+    this.load.image("tile_rocket", "assets/tiles/rocket.png");
+    this.load.image("tile_cupido", "assets/tiles/cupido.png");
 
     // --- AUDIO ---
     this.load.audio("bgm_fondo", "assets/audio/fondo.mp3");

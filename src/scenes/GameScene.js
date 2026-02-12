@@ -59,7 +59,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Score + tiempo
         this.score = 0;
-        this.timeLeft = 3; // 3 segundos (testing only - will revert to 60 later)
+        this.timeLeft = 90; // 90 segundos (minuto y medio)
         this.gameOver = false;
     }
 

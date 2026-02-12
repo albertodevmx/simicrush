@@ -36,7 +36,7 @@ export default class SplashScene2 extends Phaser.Scene {
 
     // Add imiwebs (will appear in second phase)
     // Position 10px down from previous position (centerY - 7.5 + 10 = centerY + 2.5)
-    const imiwebsY = centerY + 2.5;
+    const imiwebsY = centerY + -0.5;
     const imiwebs = this.add.image(centerX, imiwebsY, "imiwebs")
       .setOrigin(0.5)
       .setAlpha(0)
@@ -60,7 +60,7 @@ export default class SplashScene2 extends Phaser.Scene {
       this.tweens.add({
         targets: simbolo2,
         y: targetYSimbolo2,
-        duration: 500,
+        duration: 400,
         ease: "Linear"
       });
     });
@@ -78,7 +78,7 @@ export default class SplashScene2 extends Phaser.Scene {
       this.tweens.add({
         targets: [simbolo1, simbolo2],
         x: "-=" + moveDistance,
-        duration: 200,
+        duration: 300,
         ease: "Linear"
       });
     });
@@ -100,7 +100,7 @@ export default class SplashScene2 extends Phaser.Scene {
         targets: imiwebs,
         alpha: { from: 0, to: 1 },
         x: "+=" + finalXMovement,
-        duration: 700,
+        duration: 100,
         ease: "Linear"
       });
     });

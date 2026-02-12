@@ -16,10 +16,17 @@ export default class MenuScene extends Phaser.Scene {
 
     // Fondo con imagen
     if (this.textures.exists("menu-bg")) {
-      this.add.image(centerX, centerY, "menu-bg").setDisplaySize(
-        this.cameras.main.width,
-        this.cameras.main.height
-      );
+      const bg = this.add.image(centerX, centerY, "menu-bg")
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
+        .setAlpha(0);
+
+      // FadeIn animation for background (500ms)
+      this.tweens.add({
+        targets: bg,
+        alpha: 1,
+        duration: 500,
+        ease: "Linear"
+      });
     }
 
     // Título con imagen
@@ -30,7 +37,16 @@ export default class MenuScene extends Phaser.Scene {
     // Scale title to 80% of screen width
     const titleTargetWidth = this.cameras.main.width * 0.8;
     const titleScale = titleTargetWidth / titleImg.width;
-    titleImg.setScale(titleScale);
+    titleImg.setScale(titleScale * 0.1);
+
+    // Bounce scale animation for logo (from 10% to 100%, 500ms)
+    this.tweens.add({
+      targets: titleImg,
+      scaleX: titleScale,
+      scaleY: titleScale,
+      duration: 500,
+      ease: "Bounce.out"
+    });
 
     // Animate title
     this.tweens.add({
@@ -44,7 +60,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Botón ENTRAR con imagen
     const btn = this.add
-      .image(centerX, centerY + 20, "btn-enter")
+      .image(centerX, this.cameras.main.height + 100, "btn-enter")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -53,9 +69,17 @@ export default class MenuScene extends Phaser.Scene {
     const btnScale = btnTargetWidth / btn.width;
     btn.setScale(btnScale);
 
+    // BounceIn animation from bottom (1000ms)
+    this.tweens.add({
+      targets: btn,
+      y: centerY + 20,
+      duration: 1000,
+      ease: "Bounce.out"
+    });
+
     // Botón Puntajes con imagen
     const scoresBtn = this.add
-      .image(centerX, centerY + 150, "btn-scores")
+      .image(centerX, this.cameras.main.height + 100, "btn-scores")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -64,9 +88,17 @@ export default class MenuScene extends Phaser.Scene {
     const scoresBtnScale = scoresBtnTargetWidth / scoresBtn.width;
     scoresBtn.setScale(scoresBtnScale);
 
+    // BounceIn animation from bottom (1000ms)
+    this.tweens.add({
+      targets: scoresBtn,
+      y: centerY + 150,
+      duration: 1000,
+      ease: "Bounce.out"
+    });
+
     // Botón Instrucciones con imagen
     const instructionsBtn = this.add
-      .image(centerX, centerY + 210, "btn-instructions")
+      .image(centerX, this.cameras.main.height + 100, "btn-instructions")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -74,6 +106,14 @@ export default class MenuScene extends Phaser.Scene {
     const instrBtnTargetWidth = this.cameras.main.width * 0.3;
     const instrBtnScale = instrBtnTargetWidth / instructionsBtn.width;
     instructionsBtn.setScale(instrBtnScale);
+
+    // BounceIn animation from bottom (1000ms)
+    this.tweens.add({
+      targets: instructionsBtn,
+      y: centerY + 210,
+      duration: 1000,
+      ease: "Bounce.out"
+    });
 
     // Store button references for enable/disable
     this.enterBtn = btn;

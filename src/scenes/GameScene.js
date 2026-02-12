@@ -59,7 +59,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Score + tiempo
         this.score = 0;
-        this.timeLeft = 120; // 120 segundos (2 minutos)
+        this.timeLeft = 3; // 3 segundos (testing only - will revert to 60 later)
         this.gameOver = false;
     }
 
@@ -768,9 +768,10 @@ export default class GameScene extends Phaser.Scene {
         overlay.on("pointerdown", () => {});
         overlay.on("pointerup", () => {});
 
-        // Panel dimensions (responsive)
+        // Panel dimensions (responsive) - height reduced by 70%
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
-        const panelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
+        const basePanelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
+        const panelHeight = basePanelHeight * 0.3;
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
@@ -813,34 +814,16 @@ export default class GameScene extends Phaser.Scene {
 
         this.saveLocalScore(this.score);
 
-        const again = this.add
-            .text(centerX, button1Y, "Jugar otra vez", {
-                fontFamily: "Arial",
-                fontSize: buttonFontSize,
-                color: "#ffffff",
-                backgroundColor: "#ff2d85",
-                padding: { left: 12, right: 12, top: 8, bottom: 8 },
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(102);
-
-        again.on("pointerdown", (pointer) => {
-            pointer.event.stopPropagation();
-            this.scene.start("menu");
-        });
-
         const scores = this.add
-            .text(centerX, button2Y, "Ver Puntajes", {
-                fontFamily: "Arial",
-                fontSize: buttonFontSize,
-                color: "#ffffff",
-                backgroundColor: "#6b21a8",
-                padding: { left: 12, right: 12, top: 8, bottom: 8 },
-            })
+            .image(centerX, button2Y, "btn-scores")
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(102);
+
+        // Scale scores button (30% of screen width)
+        const scoresBtnTargetWidth = this.gameWidth * 0.3;
+        const scoresBtnScale = scoresBtnTargetWidth / scores.width;
+        scores.setScale(scoresBtnScale);
 
         scores.on("pointerdown", (pointer) => {
             pointer.event.stopPropagation();
@@ -848,16 +831,15 @@ export default class GameScene extends Phaser.Scene {
         });
 
         const menu = this.add
-            .text(centerX, button3Y, "Volver al menú", {
-                fontFamily: "Arial",
-                fontSize: smallButtonFontSize,
-                color: "#ffd1e8",
-                backgroundColor: "#1a0022",
-                padding: { left: 10, right: 10, top: 6, bottom: 6 },
-            })
+            .image(centerX, button3Y, "btn-back-menu")
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(102);
+
+        // Scale menu button
+        const menuBtnTargetWidth = isMobile ? 160 : 224;
+        const menuBtnScale = menuBtnTargetWidth / menu.width;
+        menu.setScale(menuBtnScale);
 
         menu.on("pointerdown", (pointer) => {
             pointer.event.stopPropagation();
@@ -872,7 +854,7 @@ export default class GameScene extends Phaser.Scene {
             ease: "Back.out",
         });
         this.tweens.add({
-            targets: [again, scores, menu],
+            targets: [scores, menu],
             alpha: { from: 0, to: 1 },
             duration: 250,
             delay: 120,

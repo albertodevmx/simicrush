@@ -31,20 +31,20 @@ export default class MenuScene extends Phaser.Scene {
 
     // Título con imagen
     const titleImg = this.add
-      .image(centerX, centerY * 0.4, "menu-title")
+      .image(centerX, centerY * 0.4 + 150, "menu-title")
       .setOrigin(0.5);
 
     // Scale title to 80% of screen width
     const titleTargetWidth = this.cameras.main.width * 0.8;
     const titleScale = titleTargetWidth / titleImg.width;
-    titleImg.setScale(titleScale * 0.1);
+    titleImg.setScale(titleScale * 0.01);
 
-    // Bounce scale animation for logo (from 10% to 100%, 500ms)
+    // Bounce scale animation for logo (from 1% to 100%, 1500ms)
     this.tweens.add({
       targets: titleImg,
       scaleX: titleScale,
       scaleY: titleScale,
-      duration: 500,
+      duration: 1500,
       ease: "Bounce.out"
     });
 

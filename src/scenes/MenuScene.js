@@ -39,11 +39,12 @@ export default class MenuScene extends Phaser.Scene {
     const titleScale = titleTargetWidth / titleImg.width;
     titleImg.setScale(titleScale * 0.01);
 
-    // Bounce scale animation for logo (from 1% to 100%, 1500ms)
+    // Bounce scale animation for logo (from 1% to 100%, 1500ms) and move up 130px
     this.tweens.add({
       targets: titleImg,
       scaleX: titleScale,
       scaleY: titleScale,
+      y: centerY * 0.4 + 20,
       duration: 1500,
       ease: "Bounce.out"
     });

@@ -47,11 +47,11 @@ export default class GameScene extends Phaser.Scene {
             "tile_coffee",
             "tile_plush",
             "tile_rocket",
-            "tile_cupido",
         ];
 
-        // Special tile type (not in normal types)
+        // Special tile types (not in normal types)
         this.SUPER_COMBO_TYPE = "superCombo";
+        this.CUPIDO_TYPE = "tile_cupido";
 
         // Estado
         this.grid = []; // [row][col] = { type, sprite }
@@ -245,13 +245,7 @@ export default class GameScene extends Phaser.Scene {
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
-                let type = this.randomTypeAvoidingMatch(r, c);
-
-                // 30% probability of spawning cupido instead (index 6 is cupido)
-                if (Phaser.Math.Between(0, 100) < 30) {
-                    type = 6; // Cupido type index
-                }
-
+                const type = this.randomTypeAvoidingMatch(r, c);
                 const sprite = this.createTileSprite(r, c, type);
 
                 this.grid[r][c] = { type, sprite };
@@ -294,10 +288,9 @@ export default class GameScene extends Phaser.Scene {
 
     randomTypeAvoidingMatch(r, c) {
         // Evita formar match de 3 inmediato al generar
-        // Only generate normal types (0-5), not cupido (6)
         let tries = 0;
         while (tries < 30) {
-            const t = Phaser.Math.Between(0, 5); // Only normal types
+            const t = Phaser.Math.Between(0, this.types.length - 1);
 
             // Checa izquierda
             const left1 = c - 1 >= 0 ? this.grid[r][c - 1]?.type : null;
@@ -317,7 +310,7 @@ export default class GameScene extends Phaser.Scene {
 
             return t;
         }
-        return Phaser.Math.Between(0, 5); // Only normal types
+        return Phaser.Math.Between(0, this.types.length - 1);
     }
 
     // ---------- Input / Swipe System ----------
@@ -611,8 +604,26 @@ export default class GameScene extends Phaser.Scene {
             this.score += unique.length;
             this.scoreText.setText(`Cuadros destruidos: ${this.score}`);
 
-            // Tamaño del “burst” según el tamaño del match (se ve más épico en matches grandes)
+            // Tamaño del "burst" según el tamaño del match (se ve más épico en matches grandes)
             const burst = Phaser.Math.Clamp(6 + unique.length, 10, 26);
+
+            // Check if there's a cupido in the match and get the type it's matching with
+            let cupidoMatchType = null;
+            unique.forEach(({ r, c }) => {
+                const tile = this.grid[r][c];
+                if (tile && tile.type === this.CUPIDO_TYPE) {
+                    // Find the type of the other tiles in this match
+                    const typeCounts = {};
+                    unique.forEach(({ r: mr, c: mc }) => {
+                        const t = this.grid[mr][mc];
+                        if (t && t.type !== this.CUPIDO_TYPE) {
+                            typeCounts[t.type] = (typeCounts[t.type] || 0) + 1;
+                        }
+                    });
+                    // Get the most common type (or any type if multiple)
+                    cupidoMatchType = Object.keys(typeCounts)[0] || null;
+                }
+            });
 
             unique.forEach(({ r, c }) => {
                 const tile = this.grid[r][c];
@@ -656,7 +667,12 @@ export default class GameScene extends Phaser.Scene {
                     this.grid[r][c] = null;
                 });
 
-                resolve();
+                // If cupido was in the match, destroy all tiles of that type
+                if (cupidoMatchType) {
+                    this.destroyAllOfCupidoType(cupidoMatchType).then(() => resolve());
+                } else {
+                    resolve();
+                }
             });
         });
     }
@@ -697,7 +713,7 @@ export default class GameScene extends Phaser.Scene {
 
                 // Refill: crear nuevos arriba para caer
                 for (let r = writeRow; r >= 0; r--) {
-                    const type = Phaser.Math.Between(0, 5); // Only normal types (0-5), not cupido
+                    const type = Phaser.Math.Between(0, this.types.length - 1);
 
                     const spawnY = this.cellCenterY(r) - this.cell * (writeRow - r + 1);
                     const sprite = this.createTileSprite(r, c, type, spawnY);
@@ -1100,6 +1116,69 @@ export default class GameScene extends Phaser.Scene {
                     this.grid[r][c] = null;
                 });
             }
+
+            // Play sound
+            if (this.sfx?.pop) this.sfx.pop.play();
+
+            // After animations, drop and refill
+            this.time.delayedCall(200, async () => {
+                await this.dropAndRefill();
+                await this.resolveMatchesLoop();
+                resolve();
+            });
+        });
+    }
+
+    destroyAllOfCupidoType(type) {
+        return new Promise((resolve) => {
+            const tilesToDestroy = [];
+
+            // Find all tiles of this type (when cupido matched with them)
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    const tile = this.grid[r][c];
+                    if (tile && tile.type === type) {
+                        tilesToDestroy.push({ r, c, tile });
+                    }
+                }
+            }
+
+            if (tilesToDestroy.length === 0) {
+                resolve();
+                return;
+            }
+
+            // Add points for destroyed tiles
+            this.score += tilesToDestroy.length;
+            this.scoreText.setText(`Cuadros destruidos: ${this.score}`);
+
+            // Animate and destroy
+            tilesToDestroy.forEach(({ r, c, tile }) => {
+                const sprite = tile.sprite;
+                const glow = tile.glow || sprite.getData("glow");
+
+                // Particles at each destroyed tile position
+                const burst = 20;
+                if (this.matchEmitter) {
+                    this.matchEmitter.explode(burst, sprite.x, sprite.y);
+                }
+
+                // Pop animation
+                this.tweens.add({
+                    targets: [sprite, glow].filter(Boolean),
+                    scale: 0,
+                    alpha: 0,
+                    duration: 140,
+                    ease: "Back.in",
+                });
+
+                // Remove from grid
+                this.time.delayedCall(160, () => {
+                    if (glow) glow.destroy();
+                    sprite.destroy();
+                    this.grid[r][c] = null;
+                });
+            });
 
             // Play sound
             if (this.sfx?.pop) this.sfx.pop.play();

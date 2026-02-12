@@ -30,6 +30,17 @@ export default class SplashScene1 extends Phaser.Scene {
       ease: "Linear"
     });
 
+    // Flag to track if transition already started
+    let hasTransitioned = false;
+
+    // Function to transition to next scene
+    const goToNextScene = () => {
+      if (!hasTransitioned) {
+        hasTransitioned = true;
+        this.scene.start("splash2");
+      }
+    };
+
     // Wait and fadeOut (150% slower: 300ms * 2.5 = 750ms)
     // Total time: 2 seconds
     this.time.delayedCall(2000 - 750, () => {
@@ -39,9 +50,17 @@ export default class SplashScene1 extends Phaser.Scene {
         duration: 750,
         ease: "Linear",
         onComplete: () => {
-          this.scene.start("splash2");
+          goToNextScene();
         }
       });
+    });
+
+    // Add invisible clickable area covering entire screen
+    const clickArea = this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height)
+      .setInteractive({ useHandCursor: true });
+
+    clickArea.on("pointerdown", () => {
+      goToNextScene();
     });
   }
 }

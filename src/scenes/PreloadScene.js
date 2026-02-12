@@ -54,6 +54,11 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("instructions-bg", "/assets/fondoinstrucciones.png");
     this.load.image("top-scores-title", "/assets/top-puntajes-letrero.png");
 
+    // Splash Scene 2 Logo Parts (for animation)
+    this.load.image("simbolo1", "/assets/simbolo1.png");
+    this.load.image("simbolo2", "/assets/simbolo2.png");
+    this.load.image("imiwebs", "/assets/imiwebs.png");
+
     // Game Assets
     this.load.image("game-bg", "/assets/game/fondo-juego.png");
 

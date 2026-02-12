@@ -6,8 +6,10 @@ export default class SplashScene2 extends Phaser.Scene {
   }
 
   preload() {
-    // Load logo for this splash scene
-    this.load.image("simiwebs-logo", "/assets/simiwebs-logo.png");
+    // Load logo parts for animation
+    this.load.image("simbolo1", "/assets/simbolo1.png");
+    this.load.image("simbolo2", "/assets/simbolo2.png");
+    this.load.image("imiwebs", "/assets/imiwebs.png");
   }
 
   create() {
@@ -17,22 +19,36 @@ export default class SplashScene2 extends Phaser.Scene {
     // Set background to white
     this.cameras.main.setBackgroundColor("#ffffff");
 
-    // Add logo image in center, scaled to 40% of screen width
-    const logo = this.add.image(centerX, centerY, "simiwebs-logo")
-      .setOrigin(0.5)
+    // Add simbolo1 (left) with fade
+    const simbolo1 = this.add.image(centerX - 2.5, centerY, "simbolo1")
+      .setOrigin(1, 0.5)
       .setAlpha(0);
 
-    // Scale logo to 40% of screen width while maintaining aspect ratio
-    const targetWidth = this.cameras.main.width * 0.4;
-    const scale = targetWidth / logo.width;
-    logo.setScale(scale);
+    // Add simbolo2 (right) with fade
+    const simbolo2 = this.add.image(centerX + 2.5, centerY, "simbolo2")
+      .setOrigin(0, 0.5)
+      .setAlpha(0);
 
-    // FadeIn animation (150% slower: 500ms * 2.5 = 1250ms)
+    // FadeIn animation for both symbols (150% slower: 500ms * 2.5 = 1250ms)
     this.tweens.add({
-      targets: logo,
+      targets: [simbolo1, simbolo2],
       alpha: 1,
       duration: 1250,
       ease: "Linear"
+    });
+
+    // Calculate 80% of simbolo1 height for the animation
+    const simbolo1Height = simbolo1.height;
+    const downAmount = simbolo1Height * 0.8;
+
+    // After 500ms, animate simbolo2 down by 80% of simbolo1's height
+    this.time.delayedCall(500, () => {
+      this.tweens.add({
+        targets: simbolo2,
+        y: centerY + downAmount,
+        duration: 300,
+        ease: "Linear"
+      });
     });
 
     // Flag to track if transition already started
@@ -50,7 +66,7 @@ export default class SplashScene2 extends Phaser.Scene {
     // Total time: 2 seconds
     this.time.delayedCall(2000 - 750, () => {
       this.tweens.add({
-        targets: logo,
+        targets: [simbolo1, simbolo2],
         alpha: 0,
         duration: 750,
         ease: "Linear",

@@ -19,9 +19,9 @@ export default class ScoresScene extends Phaser.Scene {
       );
     }
 
-    // Título con imagen
+    // Título con imagen (50px down)
     const titleImg = this.add
-      .image(centerX, 40, "top-scores-title")
+      .image(centerX, 90, "top-scores-title")
       .setOrigin(0.5);
 
     // Scale title to 80% of screen width
@@ -29,10 +29,10 @@ export default class ScoresScene extends Phaser.Scene {
     const titleScale = titleTargetWidth / titleImg.width;
     titleImg.setScale(titleScale);
 
-    // Botón volver con imagen
+    // Botón volver con imagen (centered, 40px from bottom)
     const backBtn = this.add
-      .image(60, 70, "btn-back-menu")
-      .setOrigin(0, 0.5)
+      .image(centerX, this.cameras.main.height - 40, "btn-back-menu")
+      .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
     // Scale button to fit (60% del tamaño anterior)
@@ -71,8 +71,8 @@ export default class ScoresScene extends Phaser.Scene {
         return;
       }
 
-      // Display scores
-      const startY = 105;
+      // Display scores (90px lower)
+      const startY = 195;
       const rowHeight = isMobile ? 35 : 42;
       const maxRows = Math.floor((this.cameras.main.height - startY - 60) / rowHeight);
       const displayScores = topScores.slice(0, maxRows);

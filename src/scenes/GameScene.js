@@ -769,11 +769,11 @@ export default class GameScene extends Phaser.Scene {
         overlay.on("pointerup", () => {});
 
         // Panel dimensions (responsive) - compact fixed height
-        const panelWidth = this.gameWidth * 0.8;
+        const panelWidth = this.gameWidth * 0.7;
         const panelHeight = isMobile ? 300 : 320;  // Fixed compact height
 
         const panel = this.add
-            .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
+            .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.6)
             .setStrokeStyle(4, 0xff5aa5, 0.9)
             .setDepth(101);
 
@@ -785,10 +785,10 @@ export default class GameScene extends Phaser.Scene {
 
         // Positions inside panel - sequential top-to-bottom with fixed spacing
         const panelTop = centerY - (panelHeight / 2);
-        const titleY = panelTop + 25;
+        const titleY = panelTop + 40;
         const scoreY = titleY + 65;
         const button1Y = scoreY + 75;
-        const button2Y = button1Y + 50;
+        const button2Y = button1Y + 60;
 
         this.add
             .text(centerX, titleY, "⏰ ¡Tiempo!", {

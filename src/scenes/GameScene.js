@@ -88,7 +88,7 @@ export default class GameScene extends Phaser.Scene {
             this.add.image(centerX, centerY, "game-bg").setDisplaySize(
                 this.gameWidth,
                 this.gameHeight
-            );
+            ).setDepth(0);
         }
 
         // Detectar mobile antes de usarlo

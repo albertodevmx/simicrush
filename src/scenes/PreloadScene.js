@@ -60,7 +60,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("imiwebs", "/assets/imiwebs.png");
 
     // Game Assets
-    this.load.image("game-bg", "/assets/game/fondo-juego.png");
+    this.load.image("game-bg", "/assets/menu/fondo-juego.png");
 
     // Tiles (6)
     this.load.image("tile_heart_s", "/assets/tiles/heart_s.png");

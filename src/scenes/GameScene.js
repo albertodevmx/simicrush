@@ -786,8 +786,8 @@ export default class GameScene extends Phaser.Scene {
 
         // Positions inside panel
         const titleY = centerY - (panelHeight / 3.5);
-        const scoreY = centerY - (panelHeight / 12);
-        const button1Y = centerY + (panelHeight / 6);
+        const scoreY = centerY - (panelHeight / 5);
+        const button1Y = centerY + (panelHeight / 10);
         const button2Y = centerY + (panelHeight / 3);
         const button3Y = centerY + (panelHeight / 2.2);
 
@@ -803,7 +803,7 @@ export default class GameScene extends Phaser.Scene {
             .setDepth(102);
 
         this.add
-            .text(centerX, scoreY, `Cuadros destruidos:\n${this.score}`, {
+            .text(centerX, scoreY, `Puntos obtenidos:\n${this.score}`, {
                 fontFamily: "Arial",
                 fontSize: scoreFontSize,
                 color: "#ffd1e8",

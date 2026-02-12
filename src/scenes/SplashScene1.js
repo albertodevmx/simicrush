@@ -43,8 +43,8 @@ export default class SplashScene1 extends Phaser.Scene {
     };
 
     // Wait and fadeOut (150% slower: 300ms * 2.5 = 750ms)
-    // Total time: 2 seconds
-    this.time.delayedCall(2000 - 750, () => {
+    // Total time: 4 seconds (doubled)
+    this.time.delayedCall(4000 - 750, () => {
       this.tweens.add({
         targets: logo,
         alpha: 0,

@@ -121,7 +121,7 @@ export default class SplashScene2 extends Phaser.Scene {
       this.tweens.add({
         targets: [simbolo1, simbolo2, imiwebs],
         alpha: 0,
-        duration: 750,
+        duration: 1500,
         ease: "Linear",
         onComplete: () => {
           goToNextScene();

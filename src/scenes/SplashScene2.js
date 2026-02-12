@@ -60,7 +60,7 @@ export default class SplashScene2 extends Phaser.Scene {
       this.tweens.add({
         targets: simbolo2,
         y: targetYSimbolo2,
-        duration: 900,
+        duration: 500,
         ease: "Linear"
       });
     });
@@ -78,7 +78,7 @@ export default class SplashScene2 extends Phaser.Scene {
       this.tweens.add({
         targets: [simbolo1, simbolo2],
         x: "-=" + moveDistance,
-        duration: 700,
+        duration: 200,
         ease: "Linear"
       });
     });
@@ -100,7 +100,7 @@ export default class SplashScene2 extends Phaser.Scene {
         targets: imiwebs,
         alpha: 1,
         x: "+=" + finalXMovement,
-        duration: 700,
+        duration: 200,
         ease: "Linear"
       });
     });

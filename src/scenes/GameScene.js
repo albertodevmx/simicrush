@@ -919,8 +919,9 @@ export default class GameScene extends Phaser.Scene {
         this.hintGraphics = this.make.graphics({ x: 0, y: 0, add: false });
         this.hintGraphics.setDepth(5);
 
-        // Draw boxes around the 3 tiles
-        hint.matches.forEach((pos) => {
+        // Draw boxes around only the first 3 tiles of the match
+        const tilesToShow = hint.matches.slice(0, 3);
+        tilesToShow.forEach((pos) => {
             const x = this.cellCenterX(pos.c);
             const y = this.cellCenterY(pos.r);
             const size = this.cell / 2;

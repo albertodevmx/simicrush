@@ -21,44 +21,48 @@ Esto genera la carpeta `dist/` con todos los archivos necesarios.
    cp web.config dist/web.config
    ```
 
-2. **Servir en subcarpeta (recomendado):**
-   - Crear carpeta en IIS: `C:\inetpub\wwwroot\simicrush\`
+2. **Servir como Virtual Directory dentro de "porunpaismejor":**
+   - La carpeta física es: `C:\inetpub\wwwroot\porunpaismejor\simicrush\`
    - Copiar TODO el contenido de `dist/` a esa carpeta:
      - `index.html`
      - Carpeta `assets/`
      - `web.config` ← **IMPORTANTE**
    - La aplicación será accesible en: `https://www.porunpaismejor.com.mx/simicrush/`
 
-### Paso 3: Configurar el Application Pool en IIS
+### Paso 3: Configurar el Application Pool en IIS (si es necesario)
+
+Como es una Virtual Directory dentro del sitio "porunpaismejor" existente, el Application Pool ya debería estar configurado correctamente. Si necesitas verificar:
 
 1. Abrir **IIS Manager**
 2. Ir a **Application Pools**
-3. Crear o seleccionar el pool para tu aplicación
-4. Configurar:
+3. Encontrar el pool del sitio "porunpaismejor"
+4. Verificar que está configurado con:
    - **.NET CLR version:** No managed code (es una app estática)
    - **Managed pipeline mode:** Integrated
    - **Start automatically:** ✓ (activado)
 
-### Paso 4: Crear el Sitio Web en IIS
+### Paso 4: Crear la Virtual Directory en IIS (si no existe)
 
-1. En **Sites** → Click derecho → **Add Website**
+Como es una Virtual Directory dentro del sitio "porunpaismejor" existente:
+
+1. En **Sites** → **porunpaismejor** → Click derecho → **Add Virtual Directory**
 2. Configurar:
-   - **Site name:** `Simi Crush`
-   - **Physical path:** `C:\inetpub\wwwroot\` (o tu subcarpeta)
-   - **Binding type:** `http`
-   - **IP address:** `All Unassigned`
-   - **Port:** `80` (o 443 para HTTPS)
-   - **Host name:** (dejar vacío o poner tu dominio)
+   - **Alias:** `simicrush`
+   - **Physical path:** `C:\inetpub\wwwroot\porunpaismejor\simicrush\`
 3. Click **OK**
+
+**Nota:** Si "simicrush" ya existe como una carpeta dentro de "porunpaismejor", IIS debería reconocerla automáticamente.
 
 ### Paso 5: Verificar Permisos
 
-IIS necesita permisos para leer los archivos:
+IIS necesita permisos para leer los archivos en `C:\inetpub\wwwroot\porunpaismejor\simicrush\`:
 
-1. Click derecho en la carpeta → **Properties**
+1. Click derecho en la carpeta `simicrush` → **Properties**
 2. **Security tab** → **Edit**
-3. Agregar usuario `IIS_IUSRS` con permisos de **Read & Execute** y **Read**
-4. Click **Apply**
+3. Verificar que `IIS_IUSRS` tiene permisos de **Read & Execute** y **Read**
+4. Si no está, agregarlo y click **Apply**
+
+**Nota:** El sitio "porunpaismejor" ya debería tener permisos configurados, pero verifica la subcarpeta "simicrush".
 
 ### Paso 6: Verificar el `web.config`
 
@@ -71,37 +75,34 @@ El archivo `web.config` en la carpeta `dist/` configura:
 
 **Importante:** Si usas una subcarpeta en IIS, el `web.config` ya está configurado correctamente.
 
-### Paso 6b: DESPUÉS de copiar web.config - Reiniciar IIS
+### Paso 6b: DESPUÉS de copiar web.config - Reciclar Application Pool
 
-Este paso es CRÍTICO:
+Este paso es importante pero **SEGURO** (no afecta otros sitios):
 
-```bash
-iisreset
-```
+En **IIS Manager**:
+1. Ir a **Application Pools**
+2. Click derecho en el Application Pool de "porunpaismejor"
+3. Click en **Recycle**
 
-O en PowerShell (como Administrador):
+**Alternativa (si tienes acceso PowerShell como Administrador):**
 ```powershell
-net stop WAS
-net start WAS
+# Reciclar solo el Application Pool de porunpaismejor
+Restart-WebAppPool -Name "porunpaismejor"
 ```
 
-O en IIS Manager:
-- Click en el servidor en el panel izquierdo
-- En el panel derecho, click en **Restart**
+**NOTA:** NO uses `iisreset` ya que eso reinicia TODOS los sitios IIS y puede afectar otros proyectos en el servidor.
 
-## Paso 7: Habilitar URL Rewrite Module (IMPORTANTE)
+## Paso 7: URL Rewrite Module (Opcional)
 
-Si después de reiniciar IIS siguen habiendo problemas:
+El `web.config` simplificado está diseñado para **NO requerir** URL Rewrite Module. Sin embargo, si después de desplegar siguen habiendo problemas de redirecciones:
 
 1. Descargar **URL Rewrite Module** desde Microsoft:
    https://www.iis.net/downloads/microsoft/url-rewrite
 
 2. Instalarlo en el servidor IIS
 
-3. Reiniciar IIS nuevamente:
-   ```bash
-   iisreset
-   ```
+3. Reciclar el Application Pool de "porunpaismejor"
+   - En IIS Manager: **Application Pools** → Click derecho en "porunpaismejor" → **Recycle**
 
 ### Paso 8: Prueba Final
 
@@ -122,7 +123,7 @@ Este es el error más común. Significa que IIS está devolviendo HTML en lugar 
 
 **Checklist de verificación:**
 
-1. ✓ Verificar que `web.config` está en `C:\inetpub\wwwroot\simicrush\web.config`
+1. ✓ Verificar que `web.config` está en `C:\inetpub\wwwroot\porunpaismejor\simicrush\web.config`
 2. ✓ **Reiniciar IIS después de copiar web.config:**
    ```bash
    iisreset
@@ -139,7 +140,7 @@ Este es el error más común. Significa que IIS está devolviendo HTML en lugar 
 **Si sigue sin funcionar después de copiar web.config:**
 
 1. Abrir IIS Manager
-2. Seleccionar el sitio `simicrush`
+2. Seleccionar el sitio `porunpaismejor` → **simicrush** (Virtual Directory)
 3. Hacer click en **MIME Types**
 4. Verificar que `.js` está mapeado a `application/javascript`
 5. Si no está, agregarlo:

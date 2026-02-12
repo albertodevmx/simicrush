@@ -768,10 +768,10 @@ export default class GameScene extends Phaser.Scene {
         overlay.on("pointerdown", () => {});
         overlay.on("pointerup", () => {});
 
-        // Panel dimensions (responsive) - increased by 350%
+        // Panel dimensions (responsive) - reduced to fit content without excess space
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
         const basePanelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
-        const panelHeight = basePanelHeight * 2.4;
+        const panelHeight = basePanelHeight * 1.5;
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
@@ -784,12 +784,12 @@ export default class GameScene extends Phaser.Scene {
         const buttonFontSize = isMobile ? "12px" : "22px";
         const smallButtonFontSize = isMobile ? "11px" : "16px";
 
-        // Positions inside panel
-        const titleY = centerY - (panelHeight / 3.5);
-        const scoreY = centerY - (panelHeight / 5);
-        const button1Y = centerY + (panelHeight / 10);
-        const button2Y = centerY + (panelHeight / 3);
-        const button3Y = centerY + (panelHeight / 2.2);
+        // Positions inside panel - compact and centered
+        const topPadding = panelHeight * 0.15;
+        const titleY = centerY - (panelHeight / 2) + topPadding;
+        const scoreY = titleY + topPadding + 35;
+        const button1Y = centerY + (panelHeight / 2.8);
+        const button2Y = centerY + (panelHeight / 1.9);
 
         this.add
             .text(centerX, titleY, "⏰ ¡Tiempo!", {
@@ -831,7 +831,7 @@ export default class GameScene extends Phaser.Scene {
         });
 
         const menu = this.add
-            .image(centerX, button3Y, "btn-back-menu")
+            .image(centerX, button2Y, "btn-back-menu")
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(102);

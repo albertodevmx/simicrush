@@ -768,10 +768,9 @@ export default class GameScene extends Phaser.Scene {
         overlay.on("pointerdown", () => {});
         overlay.on("pointerup", () => {});
 
-        // Panel dimensions (responsive) - reduced to fit content without excess space
+        // Panel dimensions (responsive) - compact fixed height
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
-        const basePanelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
-        const panelHeight = basePanelHeight * 1.5;
+        const panelHeight = isMobile ? 300 : 320;  // Fixed compact height
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)
@@ -784,12 +783,12 @@ export default class GameScene extends Phaser.Scene {
         const buttonFontSize = isMobile ? "12px" : "22px";
         const smallButtonFontSize = isMobile ? "11px" : "16px";
 
-        // Positions inside panel - compact and centered
-        const topPadding = panelHeight * 0.15;
-        const titleY = centerY - (panelHeight / 2) + topPadding;
-        const scoreY = titleY + topPadding + 35;
-        const button1Y = centerY + (panelHeight / 2.8);
-        const button2Y = centerY + (panelHeight / 1.9);
+        // Positions inside panel - sequential top-to-bottom with fixed spacing
+        const panelTop = centerY - (panelHeight / 2);
+        const titleY = panelTop + 25;
+        const scoreY = titleY + 65;
+        const button1Y = scoreY + 75;
+        const button2Y = button1Y + 50;
 
         this.add
             .text(centerX, titleY, "⏰ ¡Tiempo!", {
@@ -815,7 +814,7 @@ export default class GameScene extends Phaser.Scene {
         this.saveLocalScore(this.score);
 
         const scores = this.add
-            .image(centerX, button2Y, "btn-scores")
+            .image(centerX, button1Y, "btn-scores")
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setDepth(102);

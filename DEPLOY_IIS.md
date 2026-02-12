@@ -10,22 +10,24 @@ npm run build
 
 Esto genera la carpeta `dist/` con todos los archivos necesarios.
 
-### Paso 2: Copiar archivos a IIS
+### Paso 2: Preparar archivos para IIS
 
-1. **Opción A - Servir en la raíz del servidor:**
-   - Copiar contenido de la carpeta `dist/` a: `C:\inetpub\wwwroot\`
-   - La aplicación será accesible en: `http://tu-servidor/`
+1. **Copiar `web.config` a la carpeta `dist/`:**
+   ```bash
+   copy web.config dist/web.config
+   ```
+   En Linux/Mac:
+   ```bash
+   cp web.config dist/web.config
+   ```
 
-2. **Opción B - Servir en una subcarpeta (recomendado para múltiples apps):**
-   - Crear una carpeta: `C:\inetpub\wwwroot\simicrush\`
-   - Copiar contenido de `dist/` ahí
-   - La aplicación será accesible en: `http://tu-servidor/simicrush/`
-   - **IMPORTANTE:** Modificar `vite.config.js` línea 8:
-     ```javascript
-     base: '/simicrush/',  // En lugar de '/'
-     ```
-   - Hacer nuevo build: `npm run build`
-   - Copiar `dist/` actualizado a IIS
+2. **Servir en subcarpeta (recomendado):**
+   - Crear carpeta en IIS: `C:\inetpub\wwwroot\simicrush\`
+   - Copiar TODO el contenido de `dist/` a esa carpeta:
+     - `index.html`
+     - Carpeta `assets/`
+     - `web.config` ← **IMPORTANTE**
+   - La aplicación será accesible en: `https://www.porunpaismejor.com.mx/simicrush/`
 
 ### Paso 3: Configurar el Application Pool en IIS
 
@@ -69,16 +71,34 @@ El archivo `web.config` en la carpeta `dist/` configura:
 
 **Importante:** Si usas una subcarpeta en IIS, el `web.config` ya está configurado correctamente.
 
-### Paso 7: Habilitar URL Rewrite Module (IMPORTANTE)
+### Paso 6b: DESPUÉS de copiar web.config - Reiniciar IIS
 
-Si los assets se cargan pero las rutas internas no funcionan:
+Este paso es CRÍTICO:
+
+```bash
+iisreset
+```
+
+O en PowerShell (como Administrador):
+```powershell
+net stop WAS
+net start WAS
+```
+
+O en IIS Manager:
+- Click en el servidor en el panel izquierdo
+- En el panel derecho, click en **Restart**
+
+## Paso 7: Habilitar URL Rewrite Module (IMPORTANTE)
+
+Si después de reiniciar IIS siguen habiendo problemas:
 
 1. Descargar **URL Rewrite Module** desde Microsoft:
    https://www.iis.net/downloads/microsoft/url-rewrite
 
 2. Instalarlo en el servidor IIS
 
-3. Reiniciar IIS:
+3. Reiniciar IIS nuevamente:
    ```bash
    iisreset
    ```
@@ -96,15 +116,49 @@ Si ves la aplicación pero los assets no cargan:
 
 ## Solución de Problemas
 
+### Error: "Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of text/html"
+
+Este es el error más común. Significa que IIS está devolviendo HTML en lugar de JavaScript.
+
+**Checklist de verificación:**
+
+1. ✓ Verificar que `web.config` está en `C:\inetpub\wwwroot\simicrush\web.config`
+2. ✓ **Reiniciar IIS después de copiar web.config:**
+   ```bash
+   iisreset
+   ```
+3. ✓ Abrir DevTools (F12) → Tab "Network"
+4. ✓ Buscar la línea que intenta cargar (`index-XXXXX.js`)
+5. ✓ Hacer click en ese archivo
+6. ✓ Ver detalles:
+   - **Headers tab:** Verificar `Content-Type: application/javascript`
+   - **Response tab:** Debe mostrar código JavaScript, NO HTML
+7. ✓ Si muestra HTML → El MIME type no está configurado
+   - Solución: Copiar `web.config` y reiniciar IIS
+
+**Si sigue sin funcionar después de copiar web.config:**
+
+1. Abrir IIS Manager
+2. Seleccionar el sitio `simicrush`
+3. Hacer click en **MIME Types**
+4. Verificar que `.js` está mapeado a `application/javascript`
+5. Si no está, agregarlo:
+   - Click **Add**
+   - File name extension: `.js`
+   - MIME type: `application/javascript`
+   - Click **OK**
+
 ### Error: "Failed to load resource: net::ERR_FAILED"
 - ✓ Verificar que `web.config` está en la carpeta de la app
 - ✓ Verificar permisos IIS_IUSRS en la carpeta
+- ✓ Reiniciar IIS: `iisreset`
 - ✓ Habilitar URL Rewrite Module
 
 ### Error: Assets no cargan (404)
-- ✓ Revisar en Developer Tools (F12) el path exacto de los assets
-- ✓ Verificar que `vite.config.js` tiene el `base:` correcto
-- ✓ Si cambió el `base:`, hacer nuevo build: `npm run build`
+- ✓ En DevTools Network tab, ver la URL exacta del asset fallido
+- ✓ Verificar que `vite.config.js` tiene el `base: '/simicrush/'` correcto
+- ✓ Copiar el nuevo `dist/` a IIS
+- ✓ Reiniciar IIS: `iisreset`
 
 ### CORS Error
 - El `web.config` está configurado para permitir CORS
@@ -113,6 +167,7 @@ Si ves la aplicación pero los assets no cargan:
 ### Aplicación se carga pero redirecciones no funcionan
 - Habilitar IIS URL Rewrite Module (paso 7)
 - El `web.config` maneja esto automáticamente
+- Reiniciar IIS después de instalar URL Rewrite Module
 
 ## Configuración para HTTPS (Producción)
 

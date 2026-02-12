@@ -48,22 +48,23 @@ export default class SplashScene2 extends Phaser.Scene {
       ease: "Linear"
     });
 
-    // Calculate 80% of simbolo1 height for the animation
-    const simbolo1Height = simbolo1.height;
-    const downAmount = simbolo1Height * 0.8;
+    // Calculate position: 40px below the top of simbolo1
+    const simbolo1DisplayHeight = simbolo1.displayHeight;
+    const topOfSimbolo1 = centerY - (simbolo1DisplayHeight / 2);
+    const targetYSimbolo2 = topOfSimbolo1 + 40;
 
-    // After 500ms, animate simbolo2 down by 80% of simbolo1's height
+    // After 500ms, animate simbolo2 down (200% slower: 300ms * 3 = 900ms)
     this.time.delayedCall(500, () => {
       this.tweens.add({
         targets: simbolo2,
-        y: centerY + downAmount,
-        duration: 300,
+        y: targetYSimbolo2,
+        duration: 900,
         ease: "Linear"
       });
     });
 
-    // After 1550ms, start second phase: move symbols left, imiwebs appears and moves right
-    this.time.delayedCall(1550, () => {
+    // After simbolo2 finishes descending (500 + 900 + 50ms buffer), start second phase
+    this.time.delayedCall(1450, () => {
       // Distance to move symbols left
       const moveDistance = 80;
 
@@ -103,8 +104,8 @@ export default class SplashScene2 extends Phaser.Scene {
       }
     };
 
-    // FadeOut after all animations complete (3250ms = 1550 + 700 + 1000)
-    this.time.delayedCall(3250, () => {
+    // FadeOut after all animations complete (3150ms = 1450 + 700 + 1000)
+    this.time.delayedCall(3150, () => {
       this.tweens.add({
         targets: [simbolo1, simbolo2, imiwebs],
         alpha: 0,

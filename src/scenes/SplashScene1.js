@@ -17,10 +17,11 @@ export default class SplashScene1 extends Phaser.Scene {
     // Set background to white
     this.cameras.main.setBackgroundColor("#ffffff");
 
-    // Add logo image in center with fadeIn
+    // Add logo image in center with fadeIn (reduced 40% more: 0.6x of original)
     const logo = this.add.image(centerX, centerY, "logo-simi")
       .setOrigin(0.5)
-      .setAlpha(0);
+      .setAlpha(0)
+      .setScale(0.6);
 
     // FadeIn animation (150% slower: 500ms * 2.5 = 1250ms)
     this.tweens.add({

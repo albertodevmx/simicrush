@@ -52,6 +52,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("btn-instructions", "/assets/menu/btn-instrucciones.png");
     this.load.image("btn-back-menu", "/assets/menu/btn-volver-menu.png");
     this.load.image("instructions-bg", "/assets/fondoinstrucciones.png");
+    this.load.image("top-scores-title", "/assets/top-puntajes-letrero.png");
 
     // Game Assets
     this.load.image("game-bg", "/assets/game/fondo-juego.png");

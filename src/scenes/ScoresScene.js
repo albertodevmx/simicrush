@@ -19,18 +19,15 @@ export default class ScoresScene extends Phaser.Scene {
       );
     }
 
-    // Título
-    const titleFontSize = isMobile ? "30px" : "46px";
-    this.add
-      .text(centerX, 40, "🏆 TOP PUNTAJES 🏆", {
-        fontFamily: "Arial",
-        fontSize: titleFontSize,
-        fontStyle: "bold",
-        color: "#ff5aa5",
-        stroke: "#ffffff",
-        strokeThickness: isMobile ? 3 : 4,
-      })
+    // Título con imagen
+    const titleImg = this.add
+      .image(centerX, 40, "top-scores-title")
       .setOrigin(0.5);
+
+    // Scale title to 80% of screen width
+    const titleTargetWidth = this.cameras.main.width * 0.8;
+    const titleScale = titleTargetWidth / titleImg.width;
+    titleImg.setScale(titleScale);
 
     // Botón volver con imagen
     const backBtn = this.add

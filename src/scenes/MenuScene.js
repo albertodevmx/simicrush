@@ -31,7 +31,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Título con imagen
     const titleImg = this.add
-      .image(centerX, centerY * 0.4 + 150, "menu-title")
+      .image(centerX, centerY * 0.4 + 50, "menu-title")
       .setOrigin(0.5);
 
     // Scale title to 80% of screen width
@@ -52,7 +52,7 @@ export default class MenuScene extends Phaser.Scene {
     // Animate title
     this.tweens.add({
       targets: titleImg,
-      y: titleImg.y - 10,
+      y: titleImg.y - 50,
       duration: 900,
       yoyo: true,
       repeat: -1,
@@ -73,7 +73,7 @@ export default class MenuScene extends Phaser.Scene {
     // BounceIn animation from bottom (1000ms)
     this.tweens.add({
       targets: btn,
-      y: centerY + 20,
+      y: centerY + 10,
       duration: 1000,
       ease: "Bounce.out"
     });
@@ -92,6 +92,8 @@ export default class MenuScene extends Phaser.Scene {
     // BounceIn animation from bottom (1000ms)
     this.tweens.add({
       targets: scoresBtn,
+      scaleX: 0.6,
+      scaleY: 0.6,
       y: centerY + 150,
       duration: 1000,
       ease: "Bounce.out"

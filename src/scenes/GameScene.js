@@ -771,7 +771,7 @@ export default class GameScene extends Phaser.Scene {
         // Panel dimensions (responsive) - increased by 350%
         const panelWidth = isMobile ? this.gameWidth - 20 : Math.min(this.gameWidth - 40, 520);
         const basePanelHeight = isMobile ? this.gameHeight - 80 : Math.min(this.gameHeight - 100, 350);
-        const panelHeight = basePanelHeight * 4.5;
+        const panelHeight = basePanelHeight * 2.4;
 
         const panel = this.add
             .rectangle(centerX, centerY, panelWidth, panelHeight, 0x2a0033, 0.95)

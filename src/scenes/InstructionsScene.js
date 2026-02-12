@@ -17,17 +17,17 @@ export default class InstructionsScene extends Phaser.Scene {
         .setDepth(0);
     }
 
-    // Add instructions image overlay on top (80% scale, offset down 45px)
+    // Add instructions image overlay on top (80% scale, offset up 5px)
     if (this.textures.exists("instructions-bg")) {
-      this.add.image(centerX, centerY + 45, "instructions-bg")
+      this.add.image(centerX, centerY - 5, "instructions-bg")
         .setDisplaySize(this.cameras.main.width * 0.8, this.cameras.main.height * 0.8)
         .setDepth(1);
     }
 
-    // Botón volver con imagen
+    // Botón volver con imagen (40px from bottom, centered horizontally)
     const backBtn = this.add
-      .image(15, 40, "btn-back-menu")
-      .setOrigin(0, 0.5)
+      .image(centerX, this.cameras.main.height - 40, "btn-back-menu")
+      .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .setDepth(10);
 

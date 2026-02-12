@@ -35,7 +35,9 @@ export default class SplashScene2 extends Phaser.Scene {
       .setScale(animationScale);
 
     // Add imiwebs (will appear in second phase)
-    const imiwebs = this.add.image(centerX, centerY, "imiwebs")
+    // Position 10px down from previous position (centerY - 7.5 + 10 = centerY + 2.5)
+    const imiwebsY = centerY + 2.5;
+    const imiwebs = this.add.image(centerX, imiwebsY, "imiwebs")
       .setOrigin(0.5)
       .setAlpha(0)
       .setScale(animationScale);
@@ -48,10 +50,10 @@ export default class SplashScene2 extends Phaser.Scene {
       ease: "Linear"
     });
 
-    // Calculate position: 44px below the top of simbolo1 (50% reduction: 88 → 44)
+    // Calculate position: 36px below the top of simbolo1 (44px - 8px up)
     const simbolo1DisplayHeight = simbolo1.displayHeight;
     const topOfSimbolo1 = centerY - (simbolo1DisplayHeight / 2);
-    const targetYSimbolo2 = topOfSimbolo1 + 44;
+    const targetYSimbolo2 = topOfSimbolo1 + 36;
 
     // After 500ms, animate simbolo2 down (200% slower: 300ms * 3 = 900ms)
     this.time.delayedCall(500, () => {
@@ -89,16 +91,15 @@ export default class SplashScene2 extends Phaser.Scene {
       // Horizontal overlap: 15% of imiwebs width
       const overlapAmount = imiwebs.displayWidth * 0.15;
 
-      // Final position: 50% reduction (20px → 10px left, 15px → 7.5px up)
+      // Final position: 50% reduction (20px → 10px left)
+      // No vertical movement - maintains same Y throughout animation
       const finalXMovement = moveDistance - overlapAmount - 10;
-      const finalYMovement = -7.5;
 
-      // FadeIn and move imiwebs
+      // FadeIn and move imiwebs horizontally only
       this.tweens.add({
         targets: imiwebs,
         alpha: 1,
         x: "+=" + finalXMovement,
-        y: "+=" + finalYMovement,
         duration: 700,
         ease: "Linear"
       });

@@ -524,6 +524,15 @@ export default class GameScene extends Phaser.Scene {
         const matches = [];
         const marked = Array.from({ length: this.rows }, () => Array(this.cols).fill(false));
 
+        // Helper function to check if two tiles can match
+        const canMatch = (type1, type2) => {
+            if (!type1 || !type2) return false;
+            // Cupido matches with anything (including other cupidos)
+            if (type1 === this.CUPIDO_TYPE || type2 === this.CUPIDO_TYPE) return true;
+            // Otherwise, types must be exactly equal
+            return type1 === type2;
+        };
+
         // Horizontal
         for (let r = 0; r < this.rows; r++) {
             let streak = 1;
@@ -531,7 +540,7 @@ export default class GameScene extends Phaser.Scene {
                 const prev = this.grid[r][c - 1];
                 const curr = c < this.cols ? this.grid[r][c] : null;
 
-                if (curr && prev && curr.type === prev.type) streak++;
+                if (curr && prev && canMatch(curr.type, prev.type)) streak++;
                 else {
                     if (streak >= 3) {
                         for (let k = 0; k < streak; k++) marked[r][c - 1 - k] = true;
@@ -548,7 +557,7 @@ export default class GameScene extends Phaser.Scene {
                 const prev = this.grid[r - 1][c];
                 const curr = r < this.rows ? this.grid[r][c] : null;
 
-                if (curr && prev && curr.type === prev.type) streak++;
+                if (curr && prev && canMatch(curr.type, prev.type)) streak++;
                 else {
                     if (streak >= 3) {
                         for (let k = 0; k < streak; k++) marked[r - 1 - k][c] = true;

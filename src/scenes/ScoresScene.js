@@ -29,9 +29,9 @@ export default class ScoresScene extends Phaser.Scene {
     const titleScale = titleTargetWidth / titleImg.width;
     titleImg.setScale(titleScale);
 
-    // Botón volver con imagen (centered, 40px from bottom)
+    // Botón volver con imagen (centered, 140px from bottom)
     const backBtn = this.add
-      .image(centerX, this.cameras.main.height - 40, "btn-back-menu")
+      .image(centerX, this.cameras.main.height - 140, "btn-back-menu")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -71,8 +71,9 @@ export default class ScoresScene extends Phaser.Scene {
         return;
       }
 
-      // Display scores (90px lower)
-      const startY = 195;
+      // Display scores (90px + 50px lower)
+      const startY = 245;
+      const horizontalPadding = 50;
       const rowHeight = isMobile ? 35 : 42;
       const maxRows = Math.floor((this.cameras.main.height - startY - 60) / rowHeight);
       const displayScores = topScores.slice(0, maxRows);
@@ -85,12 +86,13 @@ export default class ScoresScene extends Phaser.Scene {
         const rank = index + 1;
         const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
 
-        // Card background (rectangle with rounded corners effect)
-        const cardWidth = isMobile ? 260 : 500;
-        const cardX = centerX - cardWidth / 2;
+        // Card background with horizontal padding
+        const cardWidth = this.cameras.main.width - (horizontalPadding * 2);
+        const cardX = horizontalPadding;
         const cardHeight = isMobile ? 25 : 30;
+        const cardCenterX = horizontalPadding + cardWidth / 2;
         this.add
-          .rectangle(centerX, y, cardWidth, cardHeight, 0xffffff, 0.95)
+          .rectangle(cardCenterX, y, cardWidth, cardHeight, 0xffffff, 0.95)
           .setStrokeStyle(2, 0xff5aa5, 0.5);
 
         // Rank and medal
@@ -115,7 +117,7 @@ export default class ScoresScene extends Phaser.Scene {
 
         // Score
         this.add
-          .text(centerX + cardWidth / 2 - 8, y, `${score.score}`, {
+          .text(cardCenterX + cardWidth / 2 - 8, y, `${score.score}`, {
             fontFamily: "Arial",
             fontSize: fontSizeRank,
             color: "#ff5aa5",

@@ -1,0 +1,44 @@
+{
+  "rules": {
+    "players": {
+      "$employeeNumber": {
+        ".read": true,
+        ".write": true,
+        "playerName": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+        },
+        "lastUpdated": {
+          ".validate": "newData.isString()"
+        },
+        "records": {
+          "$gameId": {
+            ".validate": "newData.hasChildren(['score', 'playerName', 'status'])",
+            "score": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 500"
+            },
+            "status": {
+              ".validate": "newData.isString() && (newData.val() === 'playing' || newData.val() === 'completed')"
+            },
+            "playerName": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+            },
+            "employeeNumber": {
+              ".validate": "newData.isString()"
+            },
+            "startTime": {
+              ".validate": "newData.isString()"
+            },
+            "endTime": {
+              ".validate": "newData.isString()"
+            },
+            "deviceInfo": {
+              ".validate": true
+            }
+          }
+        }
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}

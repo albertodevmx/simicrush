@@ -63,6 +63,7 @@ export default class GameScene extends Phaser.Scene {
         this.score = 0;
         this.timeLeft = 60; // 90 segundos (minuto y medio)
         this.gameOver = false;
+        this.timerBonusUsed = false; // Solo 1 double-tap bonus por partida
     }
 
     async create() {
@@ -1327,8 +1328,9 @@ export default class GameScene extends Phaser.Scene {
     // ---------- Helpers ----------
 
     onTimerDoubleTap() {
-        if (this.gameOver) return;
+        if (this.gameOver || this.timerBonusUsed) return;
 
+        this.timerBonusUsed = true;
         this.timeLeft += 60;
         this.updateTimeText();
 

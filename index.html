@@ -2,234 +2,159 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-    <title>Match Love</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simi Match - Gracias por participar</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
+
       body {
-        background: #120018;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        width: 100vw;
-        overflow: hidden;
+        min-height: 100vh;
+        background: url('img/fondo.png') center center / cover no-repeat fixed;
         font-family: Arial, sans-serif;
-      }
-      canvas {
-        max-width: 100vw;
-        max-height: 100vh;
-        display: block;
-        margin: auto;
-      }
-      #app {
-        width: 100%;
-        height: 100%;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        overflow-x: hidden;
       }
 
-      /* Player Form Modal */
-      #playerFormModal {
-        display: none;
+      /* Overlay oscuro para contraste */
+      body::before {
+        content: '';
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-        pointer-events: none;
+        inset: 0;
+        background: rgba(0, 0, 20, 0.45);
+        z-index: 0;
       }
 
-      #playerFormModal.active {
-        display: flex;
-        pointer-events: auto;
-      }
-
-      .form-container {
-        background-image: url('/assets/fondo-card.png');
-        background-size: cover;
-        background-position: center;
-        border-radius: 16px;
-        max-width: 440px;
+      .container {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 30px 20px;
+        max-width: 520px;
         width: 90%;
-        box-shadow: 0 8px 32px rgba(255, 45, 133, 0.3);
-        position: relative;
-        overflow: visible;
-        margin-top: -27px;
-        aspect-ratio: 19 / 18;
-        padding: 0;
       }
 
-      .close-btn {
-        position: relative;
-        float: right;
-        width: 32px;
-        height: 32px;
-        background: #ff2d85;
-        color: #ffffff;
-        border: none;
-        border-radius: 50%;
-        font-size: 24px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s;
-        margin: 10px 10px 0 0;
+      .titulo {
+        width: 85%;
+        max-width: 400px;
+        margin-bottom: 10px;
+        animation: floatTitle 3s ease-in-out infinite;
+        filter: drop-shadow(0 4px 20px rgba(255, 90, 165, 0.5));
       }
 
-      .close-btn:hover {
-        background: #ff5aa5;
-        transform: scale(1.1);
+      @keyframes floatTitle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
       }
 
-      .close-btn:active {
-        transform: scale(0.95);
-      }
-
-      #playerForm {
-        width: 100%;
-        clear: both;
-        margin-top: 110px;
-        margin-bottom: 0;
-        padding: 0 40px 20px 40px;
-        box-sizing: border-box;
-      }
-
-      .form-container h2 {
-        color: #ffd1e8;
-        margin-bottom: 20px;
-        text-align: center;
-        font-size: 24px;
-        margin-top: 0;
-      }
-
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
+      .cupido {
+        width: 150px;
+        margin: 0 auto 15px;
         display: block;
+        animation: pulse 2s ease-in-out infinite;
+        filter: drop-shadow(0 4px 15px rgba(255, 45, 133, 0.4));
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.06); }
+      }
+
+      .card {
+        background: rgba(30, 0, 50, 0.75);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 90, 165, 0.6);
+        border-radius: 20px;
+        padding: 35px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 40px rgba(255, 45, 133, 0.2);
+      }
+
+      .card h1 {
         color: #ffd1e8;
+        font-size: clamp(22px, 5vw, 32px);
+        margin-bottom: 12px;
+        line-height: 1.3;
+      }
+
+      .card p {
+        color: #e0c4f0;
+        font-size: clamp(14px, 3.5vw, 18px);
+        line-height: 1.6;
         margin-bottom: 8px;
-        font-size: 14px;
+      }
+
+      .card .highlight {
+        color: #ff5aa5;
         font-weight: bold;
       }
 
-      .form-group input {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #ff5aa5;
-        border-radius: 8px;
-        background: #1a0022;
-        color: #ffffff;
-        font-size: 14px;
-        transition: border-color 0.3s;
+      /* Tiles flotantes decorativos */
+      .floating-tiles {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
       }
 
-      .form-group input:focus {
-        outline: none;
-        border-color: #ffd1e8;
+      .floating-tiles img {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.3));
       }
 
-      .form-group input::placeholder {
-        color: #666;
+      .floating-tiles img:nth-child(1) { animation: bob 2.5s ease-in-out 0.0s infinite; }
+      .floating-tiles img:nth-child(2) { animation: bob 2.5s ease-in-out 0.3s infinite; }
+      .floating-tiles img:nth-child(3) { animation: bob 2.5s ease-in-out 0.6s infinite; }
+      .floating-tiles img:nth-child(4) { animation: bob 2.5s ease-in-out 0.9s infinite; }
+      .floating-tiles img:nth-child(5) { animation: bob 2.5s ease-in-out 1.2s infinite; }
+      .floating-tiles img:nth-child(6) { animation: bob 2.5s ease-in-out 1.5s infinite; }
+
+      @keyframes bob {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
       }
 
-      .form-error {
-        color: #ff2d85;
-        font-size: 12px;
-        margin-top: 5px;
-        display: none;
-      }
-
-      .form-error.show {
-        display: block;
-      }
-
-      .form-message {
-        color: #ffd1e8;
-        font-size: 12px;
-        margin-top: 8px;
-        text-align: center;
-        display: none;
-      }
-
-      .form-message.show {
-        display: block;
-      }
-
-      .form-button {
-        width: 100%;
-        padding: 14px;
-        margin-top: 8px;
-        background: #ff2d85;
-        color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .form-button:hover:not(:disabled) {
-        background: #ff5aa5;
-        transform: scale(1.05);
-      }
-
-      .form-button:disabled {
-        background: #999;
-        cursor: not-allowed;
-        opacity: 0.6;
-      }
-
-      .form-button:active:not(:disabled) {
-        transform: scale(0.95);
+      .logo-simi {
+        width: 60px;
+        margin-top: 10px;
+        opacity: 0.8;
       }
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div class="container">
+      <img src="img/titulo.png" alt="Simi Match" class="titulo" />
 
-    <!-- Player Form Modal -->
-    <div id="playerFormModal">
-      <div class="form-container">
-        <button type="button" class="close-btn" id="closeFormBtn">&times;</button>
-        <form id="playerForm">
-          <div class="form-group">
-            <label for="employeeNumber">Número de Empleado (6 dígitos)</label>
-            <input
-              type="text"
-              id="employeeNumber"
-              placeholder="Ej: 123456"
-              maxlength="6"
-              inputmode="numeric"
-            />
-            <div class="form-error" id="employeeError"></div>
-          </div>
+      <img src="img/cupido.png" alt="Dr. Simi Cupido" class="cupido" />
 
-          <div class="form-group">
-            <label for="playerName">Nombre</label>
-            <input
-              type="text"
-              id="playerName"
-              placeholder="Tu nombre"
-              maxlength="20"
-            />
-            <div class="form-error" id="nameError"></div>
-          </div>
-
-          <div class="form-message" id="formMessage"></div>
-
-          <button type="submit" class="form-button" id="submitBtn">Jugar</button>
-        </form>
+      <div class="card">
+        <h1>Gracias por participar</h1>
+        <p>
+          La din&aacute;mica de <span class="highlight">Simi Match</span> ha llegado a su fin.
+        </p>
+        <p>
+          Fue incre&iacute;ble ver la energ&iacute;a y entusiasmo de todos los participantes.
+        </p>
+        <p style="margin-top: 16px; font-size: clamp(15px, 3.8vw, 20px);">
+          <span class="highlight">Nos vemos el pr&oacute;ximo a&ntilde;o!</span>
+        </p>
       </div>
-    </div>
 
-    <script type="module" src="/src/main.js"></script>
+      <div class="floating-tiles">
+        <img src="img/heart.png" alt="Heart" />
+        <img src="img/rocket.png" alt="Rocket" />
+        <img src="img/coffee.png" alt="Coffee" />
+        <img src="img/dog.png" alt="Dog" />
+        <img src="img/plush.png" alt="Plush" />
+        <img src="img/syringe.png" alt="Syringe" />
+      </div>
+
+      <img src="img/logo-simi.png" alt="Simi" class="logo-simi" />
+    </div>
+  </body>
+</html>

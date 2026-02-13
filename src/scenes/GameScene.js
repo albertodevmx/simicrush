@@ -13,6 +13,7 @@ export default class GameScene extends Phaser.Scene {
         this.hintGraphics = null;
         this.isFirstMatchInCascade = false;
         this.centerTaps = []; // Easter egg: track rapid center taps
+        this.lastTimerTapTime = 0; // Double-tap detection for timer bonus
     }
 
     init() {
@@ -134,7 +135,18 @@ export default class GameScene extends Phaser.Scene {
                 padding: { left: 10, right: 10, top: 5, bottom: 5 },
             })
             .setOrigin(1, 0)
-            .setDepth(10);
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true });
+
+        // Double-tap en el cronómetro = +60 segundos
+        this.timeText.on("pointerdown", (pointer) => {
+            pointer.event.stopPropagation();
+            const now = this.time.now;
+            if (now - this.lastTimerTapTime < 300) {
+                this.onTimerDoubleTap();
+            }
+            this.lastTimerTapTime = now;
+        });
 
         // Botón menú con imagen
         const backY = isMobile ? 65 : 85;
@@ -1313,6 +1325,47 @@ export default class GameScene extends Phaser.Scene {
     }
 
     // ---------- Helpers ----------
+
+    onTimerDoubleTap() {
+        if (this.gameOver) return;
+
+        this.timeLeft += 60;
+        this.updateTimeText();
+
+        // Feedback visual: flash verde + escala
+        this.timeText.setColor("#00ff88");
+        this.tweens.add({
+            targets: this.timeText,
+            scale: 1.3,
+            duration: 200,
+            yoyo: true,
+            onComplete: () => {
+                // Restaurar color según el tiempo restante
+                this.timeText.setColor(this.timeLeft <= 10 ? "#ff2d85" : "#ffffff");
+            },
+        });
+
+        // Texto flotante "+60s"
+        const bounds = this.timeText.getBounds();
+        const floatingText = this.add
+            .text(bounds.centerX, bounds.bottom + 5, "+60s", {
+                fontFamily: "Arial",
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#00ff88",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(11);
+
+        this.tweens.add({
+            targets: floatingText,
+            y: floatingText.y - 40,
+            alpha: 0,
+            duration: 800,
+            ease: "Sine.out",
+            onComplete: () => floatingText.destroy(),
+        });
+    }
 
     updateTimeText() {
         const t = Math.max(0, this.timeLeft);

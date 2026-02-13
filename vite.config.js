@@ -4,7 +4,7 @@ export default defineConfig({
   // Base URL - cambiar según donde se sirva en IIS
   // Para raíz del servidor: '/'
   // Para subcarpeta: '/simicrush/'
-  base: '/simicrush/',
+  base: '/',
 
   publicDir: 'public',
 
